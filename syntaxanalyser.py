@@ -1,7 +1,7 @@
 from constants import *
 
 
-class SyntaxAnalyserRDP():
+class SyntaxAnalyserRDP:
     def __init__(self):
         self.tokens = []
         self.current_token_index = 0

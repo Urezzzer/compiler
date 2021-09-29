@@ -5,7 +5,7 @@ from constants import *
 import os
 
 
-class Parser():
+class Parser:
     def __init__(self):
         self.tokens = []
         self.lexer = Lexer()
