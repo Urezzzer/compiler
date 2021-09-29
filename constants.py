@@ -27,7 +27,8 @@ class LexerState(Enum):
     ALPHABETIC = 3,
     OPERATOR = 4,
     COMMENT = 5,
-    INVALID = 6
+    INVALID = 6,
+    STRING = 7
 
 
 class Constants(object):

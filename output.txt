@@ -3,8 +3,7 @@ TOKENS       LEXEMES
 KEYWORD      string                  
 IDENTIFIER   a                       
 OPERATOR     =                       
-NOT_EXISTS   '                       
-INVALID      12a                     
-IDENTIFIER   bc12                    
-NOT_EXISTS   '                       
+SEPARATOR    '                       
+STRING       12abc12                 
+SEPARATOR    '                       
 SEPARATOR    ;                       

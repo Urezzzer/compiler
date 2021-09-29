@@ -12,7 +12,9 @@ class Lexer(object):
     def parse(self, line):
         for char in line:
             if char.isalpha():
-                if self.current_state == LexerState.START:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state == LexerState.START:
                     self.current_state = LexerState.ALPHABETIC
                     self.append_to_buffer(char)
                 elif self.current_state in [LexerState.INTEGER, LexerState.REAL]:
@@ -22,13 +24,17 @@ class Lexer(object):
                 elif self.current_state == LexerState.ALPHABETIC:
                     self.append_to_buffer(char)
             elif char.isnumeric():
-                if self.current_state == LexerState.START:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state == LexerState.START:
                     self.current_state = LexerState.INTEGER
                     self.append_to_buffer(char)
                 elif self.current_state in [LexerState.INTEGER, LexerState.REAL, LexerState.ALPHABETIC]:
                     self.append_to_buffer(char)
             elif char == Constants.DECIMAL:
-                if self.current_state == LexerState.INTEGER:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state == LexerState.INTEGER:
                     self.current_state = LexerState.REAL
                     self.append_to_buffer(char)
                 elif self.current_state == LexerState.ALPHABETIC:
@@ -36,24 +42,32 @@ class Lexer(object):
                     self.add_to_lexicon(''.join(self.buffer), LexerToken.INVALID)
                     self.return_to_start()
             elif char in Constants.VALID_IDENTIFIER_SYMBOLS:
-                if self.current_state == LexerState.ALPHABETIC:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state == LexerState.ALPHABETIC:
                     self.append_to_buffer(char)
                 else:
                     self.append_to_buffer(char)
                     self.add_to_lexicon(''.join(self.buffer), LexerToken.INVALID)
                     self.return_to_start()
             elif char in Constants.VALID_SEPARATORS:
-                if self.current_state != LexerState.COMMENT:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state != LexerState.COMMENT:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.SEPARATOR)
                     self.return_to_start()
             elif char in Constants.VALID_OPERATORS:
-                if self.current_state != LexerState.COMMENT:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state != LexerState.COMMENT:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.return_to_start()
             elif char == Constants.COMMENT_START:
-                if self.current_state == LexerState.COMMENT:
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                elif self.current_state == LexerState.COMMENT:
                     self.current_state = LexerState.START
                 else:
                     self.current_state = LexerState.COMMENT
@@ -61,8 +75,14 @@ class Lexer(object):
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.return_to_start()
             elif char in Constants.VALID_STRING:
-                if self.current_state == LexerState.OPERATOR:
-                    self.add_to_lexicon(''.join(self.buffer), LexerToken.OPERATOR)
+                if self.current_state != LexerState.STRING:
+                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.add_to_lexicon(char, LexerToken.SEPARATOR)
+                    self.current_state = LexerState.STRING
+                else:
+                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.add_to_lexicon(char, LexerToken.SEPARATOR)
+                    self.current_state = LexerState.START
             else:
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.add_to_lexicon(char, LexerToken.NOT_EXISTS)
@@ -91,7 +111,9 @@ class Lexer(object):
             self.buffer.append(char)
 
     def analyse_nonsymbol_lexeme(self, lexeme):
-        if self.current_state == LexerState.INTEGER:
+        if self.current_state == LexerState.STRING:
+            self.add_to_lexicon(lexeme, LexerToken.STRING)
+        elif self.current_state == LexerState.INTEGER:
             self.add_to_lexicon(lexeme, LexerToken.INTEGER)
         elif self.current_state == LexerState.REAL:
             self.add_to_lexicon(lexeme, LexerToken.REAL)
