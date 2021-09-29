@@ -2,6 +2,7 @@ from syntaxanalyser import SyntaxAnalyserRDP
 from lexer import Lexer
 from constants import *
 
+import sys
 import os
 
 
@@ -23,3 +24,12 @@ class Parser:
                 self.syntax_analyser.write_output_to_file(output_file)
         else:
             print(f"File \"{input_file}\" does not exist in the current directory.")
+
+
+def main():
+    p = Parser()
+    p.parse('C:\My Files\Python\Compilator\input.txt', 'C:\My Files\Python\Compilator\output.txt')
+
+
+if __name__ == "__main__":
+    main()
