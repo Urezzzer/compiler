@@ -146,7 +146,6 @@ class Lexer(object):
         if os.path.exists(input):
             with open(input, "r") as f:
                 for line in f:
-                    print(line)
                     if line != "\n":
                         self.parse(line)
         self.write_to_file(output)
