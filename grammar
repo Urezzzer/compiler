@@ -1,5 +1,9 @@
 <Statement> -> <If-statement> | <For-loop> | <While-loop> | <Declaration> | <Assignment>
 <Declaration> -> <Data-Type> <Assignment> | <Data-Type> <Assignment-Function>
+
+<Assignment-Function> -> <Identifier>(){<Statement>} | <Identifier>(<Data-Type> <Identifier> <Parameter>){<Statement>}
+<Parameter> -> ,<Data-Type> <Identifier>|epsilon
+
 <Assignment> -> <Identifier> = <Expression>;
 <Data-Type> -> int | boolean | float |  string | char | double | void
 
@@ -15,7 +19,7 @@
 <Expression> -> <Term> <Expression-Prime>
 <Expression-Prime> -> + <Term> <Expression-Prime> | - <Term> <Expression-Prime> | epsilon
 <Term> -> <Factor> <Term-Prime>
-<Term-Prime> -> * <Factor> <Term-Prime> | / <Factor> <Term-Prime> | epislon
+<Term-Prime> -> * <Factor> <Term-Prime> | / <Factor> <Term-Prime> | epsilon
 <Factor> -> (<Expression>) | <Identifier> | <Integer> | <Float> | <Boolean> | <String>
 
 <Separator> -> } | ) | ( | {

@@ -162,15 +162,14 @@ class SyntaxAnalyserRDP:
 
     def While_Loop(self):
         while_loop = False
-
-        self.output.append("<While-Loop> -> while <Conditional> <Statement> whileend\n")
-        if self.Conditional():
-            self.Statement()
-
-            if self.token_is("whileend"):
-                while_loop = True
-            else:
-                self.output.append("Error: While loop missing closing \"whileend\".\n")
+        self.output.append("<While-Loop> -> while (<conditional>) {<Statement>};\n ")
+        self.token_is("(")
+        self.Conditional()
+        self.token_is(")")
+        self.token_is("{")
+        self.Statement()
+        self.token_is("}")
+        self.token_is(";")
 
         return while_loop
 
