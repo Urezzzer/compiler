@@ -1,8 +1,8 @@
 <Statement> -> <If-statement> | <For-loop> | <While-loop> | <Declaration> | <Assignment>
 <Declaration> -> <Data-Type> <Assignment> | <Data-Type> <Assignment-Function>
 
-<Assignment-Function> -> <Identifier>(){<Statement>} | <Identifier>(<Data-Type> <Identifier> <Parameter>){<Statement>}
-<Parameter> -> ,<Data-Type> <Identifier>|epsilon
+<Assignment-Function> -> <Identifier>(<Parameters>){<Statement>}
+<Parameters> -> <Data-Type> <Identifier> | epsilon | <Data-Type> <Identifier>, <Parameters>
 
 <Assignment> -> <Identifier> = <Expression>;
 <Data-Type> -> int | boolean | float |  string | char | double | void
