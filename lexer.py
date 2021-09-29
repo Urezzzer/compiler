@@ -1,3 +1,5 @@
+import os
+
 from constants import *
 
 
@@ -40,10 +42,10 @@ class Lexer(object):
                     self.append_to_buffer(char)
                     self.add_to_lexicon(''.join(self.buffer), LexerToken.INVALID)
                     self.return_to_start()
-            elif char in Constants.VALID_SEPERATORS:
+            elif char in Constants.VALID_SEPARATORS:
                 if self.current_state != LexerState.COMMENT:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
-                    self.add_to_lexicon(char, LexerToken.SEPERATOR)
+                    self.add_to_lexicon(char, LexerToken.SEPARATOR)
                     self.return_to_start()
             elif char in Constants.VALID_OPERATORS:
                 if self.current_state != LexerState.COMMENT:
@@ -103,3 +105,12 @@ class Lexer(object):
 
             for entry in self.lexicon:
                 f.write("{:<12} {:<24}\n".format(entry.token.name, entry.lexeme))
+
+    def parse_file(self, input, output):
+        if os.path.exists(input):
+            with open(input, "r") as f:
+                for line in f:
+                    print(line)
+                    if line != "\n":
+                        self.parse(line)
+        self.write_to_file(output)

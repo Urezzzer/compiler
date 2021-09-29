@@ -1,14 +1,16 @@
 from parser import *
+from lexer import *
 
 import sys
 
 
+# def main():
+#    p = Parser()
+#    p.parse(sys.argv[1], sys.argv[2])
+
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python3 parser.py <input_file> <output_file>")
-    else:
-        p = Parser()
-        p.parse(sys.argv[1], sys.argv[2])
+    l = Lexer()
+    l.parse_file('C:\My Files\Python\Compilator\input.txt', 'C:\My Files\Python\Compilator\output.txt')
 
 
 if __name__ == "__main__":
