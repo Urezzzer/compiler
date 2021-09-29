@@ -8,7 +8,7 @@ Listing = namedtuple("Listing", "lexeme, token")
 class LexerToken(Enum):
     KEYWORD = 1,
     OPERATOR = 2,
-    SEPERATOR = 3,
+    SEPARATOR = 3,
     INTEGER = 4,
     REAL = 5,
     IDENTIFIER = 6,
@@ -29,8 +29,8 @@ class LexerState(Enum):
 
 
 class Constants(object):
-    VALID_OPERATORS = ["+", "-", "=", "*", "/", "%", "<", ">"]
-    VALID_SEPERATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":"]
+    VALID_OPERATORS = ["+", "-", "=", "*", "/", "%", "++", "--"]
+    VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":"]
 
     VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "whileend"]
 
@@ -40,6 +40,6 @@ class Constants(object):
     VALID_IDENTIFIER_SYMBOLS = ["$"]
     VALID_EOL_SYMBOLS = [';']
     TOKEN_END_OF_LINE = Listing("$", LexerToken.END_OF_FILE)
-    VALID_CONDITIONAL_OPERATORS = ["=", ">", "<"]
+    VALID_CONDITIONAL_OPERATORS = ["==", "<", ">", "!=", ">=", "<="]
     VALID_DATA_TYPES = ["int", "bool", "float"]
     VALID_BOOLEAN_VALUES = ["true", "false", "True", "False"]
