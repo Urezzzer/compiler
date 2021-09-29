@@ -10,6 +10,7 @@ class SyntaxAnalyserRDP:
     def parse(self, tokens):
         self.tokens = tokens
 
+
         while not self.is_current_token_an(LexerToken.END_OF_FILE):
             self.Statement()
 

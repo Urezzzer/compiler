@@ -24,9 +24,7 @@ SEPARATOR    {
 KEYWORD      string                  
 IDENTIFIER   a                       
 OPERATOR     =                       
-SEPARATOR    '                       
-STRING       12                      
-SEPARATOR    '                       
+INTEGER      12                      
 SEPARATOR    ;                       
 KEYWORD      int                     
 IDENTIFIER   t                       
