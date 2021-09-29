@@ -1,11 +1,10 @@
-<Start> -> int main() {<Statement> return 0;}
 <Statement> -> <If-statement> | <Loop> | <Declaration> | <Assignment>
-<Declaration> -> <Data-Type> <Assignment>
+<Declaration> -> <Data-Type> <Assignment> | <Data-Type> <Assignment-Function>
 <Assignment> -> <Identifier> = <Expression>;
 <Data-Type> -> int | boolean | float |  string | char | double | void
 
 <If-statement> -> if (<conditional>) {<Statement>} <Else>
-<Else> -> else {<Statement>};| ;
+<Else> -> else {<Statement>;| ;
 
 <Conditional> -> <Expression> <Conditional-Operator> <Expression>
 <Conditional-Operator> -> "==" | "<=" | ">=" | "!=" | > | <
@@ -21,7 +20,9 @@
 <Term-Prime> -> * <Factor> <Term-Prime> | / <Factor> <Term-Prime> | epislon
 <Factor> -> (<Expression>) | <Identifier> | <Integer> | <Float> | <Boolean> | <String>
 
-<Identifer> -> (Aa-Zz)(Aa-Zz0-9$)*
+<Separator> -> } | ) | ( | {
+
+<Identifier> -> (Aa-Zz)(Aa-Zz0-9$)*
 <Integer> -> (0-9)+
 <Float> -> (0-9)+.(0-9)+
 <Boolean> -> true | false

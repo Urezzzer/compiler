@@ -1,10 +1,1 @@
-void abc(int a, int t) {
-return a + b;
-}
-
-int main() {
 string a = 12;
-int t = 25;
-c = abc(a, t)
-return 0;
-}
