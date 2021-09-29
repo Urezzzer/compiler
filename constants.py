@@ -17,6 +17,7 @@ class LexerToken(Enum):
     BOOLEAN = 9,
     STRING = 10
 
+
 # states
 class LexerState(Enum):
     START = 0,
@@ -32,7 +33,8 @@ class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "/", "%"]
     VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":", '"']
 
-    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "const", "main", "char", "double", "string", "void", "return", "do", "for", "auto", ]
+    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "const", "main", "char", "double",
+                      "string", "void", "return", "do", "for", "auto", ]
 
     DECIMAL = '.'
     COMMENT_START = ["/*", "//"]
