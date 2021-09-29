@@ -1,0 +1,16 @@
+TOKENS       LEXEMES                 
+
+KEYWORD      int                     
+KEYWORD      main                    
+SEPARATOR    (                       
+SEPARATOR    )                       
+SEPARATOR    {                       
+KEYWORD      string                  
+IDENTIFIER   a                       
+OPERATOR     =                       
+SEPARATOR    '                       
+INVALID      12a                     
+IDENTIFIER   bc12                    
+SEPARATOR    '                       
+SEPARATOR    ;                       
+SEPARATOR    }                       
