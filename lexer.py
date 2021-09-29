@@ -1,5 +1,6 @@
 from constants import *
 
+
 class Lexer(object):
     def __init__(self):
         self.buffer = []
@@ -8,11 +9,11 @@ class Lexer(object):
 
     def parse(self, line):
         for char in line:
-            if (char.isalpha()):
-                if (self.current_state == LexerState.START):
+            if char.isalpha():
+                if self.current_state == LexerState.START:
                     self.current_state = LexerState.ALPHABETIC
                     self.append_to_buffer(char)
-                elif (self.current_state in [LexerState.INTEGER, LexerState.REAL]):
+                elif self.current_state in [LexerState.INTEGER, LexerState.REAL]:
                     self.append_to_buffer(char)
                     self.add_to_lexicon(''.join(self.buffer), LexerToken.INVALID)
                     self.return_to_start()
@@ -59,10 +60,10 @@ class Lexer(object):
                 self.return_to_start()
 
     def return_to_start(self):
-        if (self.current_state != LexerState.COMMENT):
+        if self.current_state != LexerState.COMMENT:
             self.buffer.clear()
             self.current_state = LexerState.START
-    
+
     def is_keyword(self, lexeme):
         if lexeme in Constants.VALID_KEYWORDS:
             return True
@@ -76,18 +77,18 @@ class Lexer(object):
             return False
 
     def append_to_buffer(self, char):
-        if (self.current_state != LexerState.COMMENT):
+        if self.current_state != LexerState.COMMENT:
             self.buffer.append(char)
 
     def analyse_nonsymbol_lexeme(self, lexeme):
-        if (self.current_state == LexerState.INTEGER):
+        if self.current_state == LexerState.INTEGER:
             self.add_to_lexicon(lexeme, LexerToken.INTEGER)
-        elif (self.current_state == LexerState.REAL):
+        elif self.current_state == LexerState.REAL:
             self.add_to_lexicon(lexeme, LexerToken.REAL)
-        elif (self.current_state == LexerState.ALPHABETIC):
-            if (self.is_keyword(lexeme)):
+        elif self.current_state == LexerState.ALPHABETIC:
+            if self.is_keyword(lexeme):
                 self.add_to_lexicon(lexeme, LexerToken.KEYWORD)
-            elif (self.is_boolean(lexeme)):
+            elif self.is_boolean(lexeme):
                 self.add_to_lexicon(lexeme, LexerToken.BOOLEAN)
             else:
                 self.add_to_lexicon(lexeme, LexerToken.IDENTIFIER)

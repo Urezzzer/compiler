@@ -1,5 +1,6 @@
 from constants import *
 
+
 class SyntaxAnalyserRDP():
     def __init__(self):
         self.tokens = []
@@ -16,32 +17,32 @@ class SyntaxAnalyserRDP():
         with open(filename, "w") as f:
             for line in self.output:
                 f.write(line)
-        
-    def token_is(self, token_to_match): 
+
+    def token_is(self, token_to_match):
         if self.tokens[self.current_token_index].lexeme == token_to_match:
-            self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme + 
-                              "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
+            self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
+                               "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
             self.advance_token()
             return True
         else:
-             return False
+            return False
 
     def token_in(self, token_list):
         if len(token_list) == 1:
             return self.token_is(token_list[0])
         else:
             if self.tokens[self.current_token_index].lexeme in token_list:
-                self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme + 
-                              "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
+                self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
+                                   "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
                 self.advance_token()
                 return True
             else:
                 return False
-    
+
     def is_current_token_an(self, token_type):
         if self.tokens[self.current_token_index].token == token_type:
-            self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme + 
-                              "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
+            self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
+                               "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
             self.advance_token()
             return True
         else:
@@ -70,25 +71,25 @@ class SyntaxAnalyserRDP():
         elif self.token_is("while"):
             self.output.append("<Statement> -> <While-Loop>\n")
             start = self.While_Loop()
-        
+
         return start
 
     def Declaration(self):
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
-    
+
         if self.is_current_token_an(LexerToken.IDENTIFIER):
             if self.Assignment():
                 declaration = True
         else:
-            self.output.append("Error: Not a valid identifier.\n")    
-        
+            self.output.append("Error: Not a valid identifier.\n")
+
         return declaration
-    
+
     def Assignment(self):
         assignment = False
         self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
-        
+
         if self.token_is('='):
             if self.Expression():
                 assignment = True
@@ -96,20 +97,20 @@ class SyntaxAnalyserRDP():
                 self.output.append("Error: Invalid expression.\n")
         else:
             self.output.append("Error: Missing '='.\n")
-        
+
         if not self.token_in(Constants.VALID_EOL_SYMBOLS):
-                self.output.append("Warning: Missing ';' at end of line.\n")
+            self.output.append("Warning: Missing ';' at end of line.\n")
 
         return assignment
 
     def If_Statement(self):
         ifstate = False
         self.output.append("<If-Statement> -> if <Conditional> then <Statement> <Else>\n")
-        
+
         if self.Conditional():
             if self.token_is("then"):
-                    self.Statement()
-                    ifstate = self.Else()
+                self.Statement()
+                ifstate = self.Else()
             else:
                 self.output.append("Error: Missing \"then\" keyword in If-Statement.\n")
         else:
@@ -136,7 +137,7 @@ class SyntaxAnalyserRDP():
             self.Statement()
         else:
             self.output.append("<Else> -> epsilon\n")
-        
+
         return True
 
     def While_Loop(self):
@@ -150,7 +151,7 @@ class SyntaxAnalyserRDP():
                 while_loop = True
             else:
                 self.output.append("Error: While loop missing closing \"whileend\".\n")
-    
+
         return while_loop
 
     def Expression(self):
@@ -162,7 +163,7 @@ class SyntaxAnalyserRDP():
                 expression = True
 
         return expression
-    
+
     def Expression_Prime(self):
         expression_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
@@ -179,7 +180,7 @@ class SyntaxAnalyserRDP():
             self.output.append("<Expression-Prime> -> epsilon\n")
 
         return expression_prime
-    
+
     def Term(self):
         term = False
 
@@ -189,7 +190,7 @@ class SyntaxAnalyserRDP():
                 term = True
 
         return term
-    
+
     def Term_Prime(self):
         term_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
@@ -201,24 +202,24 @@ class SyntaxAnalyserRDP():
                 if not self.Term_Prime():
                     term_prime = False
         else:
-           self.output.append("<Term-Prime> -> epsilon\n")
+            self.output.append("<Term-Prime> -> epsilon\n")
         return term_prime
 
     def Factor(self):
         factor = True
-        
+
         if self.is_current_token_an(LexerToken.IDENTIFIER):
-                self.output.append("<Factor> -> <Identifier>\n")
-                factor = True
+            self.output.append("<Factor> -> <Identifier>\n")
+            factor = True
         elif self.is_current_token_an(LexerToken.INTEGER):
-                self.output.append("<Factor> -> <Integer>\n")
-                factor = True
+            self.output.append("<Factor> -> <Integer>\n")
+            factor = True
         elif self.is_current_token_an(LexerToken.REAL):
-                self.output.append("<Factor> -> <Float>\n")
-                factor = True
+            self.output.append("<Factor> -> <Float>\n")
+            factor = True
         elif self.is_current_token_an(LexerToken.BOOLEAN):
-                self.output.append("<Factor> -> <Boolean>\n")
-                factor = True
+            self.output.append("<Factor> -> <Boolean>\n")
+            factor = True
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
             if (self.Expression()):
@@ -230,7 +231,8 @@ class SyntaxAnalyserRDP():
             else:
                 self.output.append("Error: Invalid expression.\n")
         else:
-            self.output.append("Error: Unrecognized value. Factor must be an integer, float, identifier or expression.\n")
+            self.output.append(
+                "Error: Unrecognized value. Factor must be an integer, float, identifier or expression.\n")
             factor = False
-        
+
         return factor

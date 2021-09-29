@@ -3,7 +3,8 @@ from collections import namedtuple
 
 Listing = namedtuple("Listing", "lexeme, token")
 
-#token types
+
+# token types
 class LexerToken(Enum):
     KEYWORD = 1,
     OPERATOR = 2,
@@ -15,7 +16,8 @@ class LexerToken(Enum):
     END_OF_FILE = 8,
     BOOLEAN = 9
 
-#states
+
+# states
 class LexerState(Enum):
     START = 0,
     INTEGER = 1,
@@ -25,12 +27,13 @@ class LexerState(Enum):
     COMMENT = 5,
     INVALID = 6
 
+
 class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "/", "%", "<", ">"]
     VALID_SEPERATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":"]
-    
+
     VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "whileend"]
-                    
+
     DECIMAL = '.'
     COMMENT_START = "!"
     COMMENT_END = "!"
