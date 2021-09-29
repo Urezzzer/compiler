@@ -60,6 +60,11 @@ class Lexer(object):
             elif char == '\n' or char == " ":
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.return_to_start()
+            else:
+                self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                self.add_to_lexicon(char, LexerToken.NOT_EXISTS)
+                self.current_state = LexerState.START
+
 
     def return_to_start(self):
         if self.current_state != LexerState.COMMENT:

@@ -1,16 +1,10 @@
 TOKENS       LEXEMES                 
 
-KEYWORD      int                     
-KEYWORD      main                    
-SEPARATOR    (                       
-SEPARATOR    )                       
-SEPARATOR    {                       
 KEYWORD      string                  
 IDENTIFIER   a                       
 OPERATOR     =                       
-SEPARATOR    '                       
+NOT_EXISTS   '                       
 INVALID      12a                     
 IDENTIFIER   bc12                    
-SEPARATOR    '                       
+NOT_EXISTS   '                       
 SEPARATOR    ;                       
-SEPARATOR    }                       

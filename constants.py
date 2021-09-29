@@ -15,7 +15,8 @@ class LexerToken(Enum):
     INVALID = 7,
     END_OF_FILE = 8,
     BOOLEAN = 9,
-    STRING = 10
+    STRING = 10,
+    NOT_EXISTS = 11
 
 
 # states
@@ -31,8 +32,8 @@ class LexerState(Enum):
 
 class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "/", "%"]
-    VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":", '"']
-
+    VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", ".", ":"]
+    VALID_STRING = ['"', "'" ]
     VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "const", "main", "char", "double",
                       "string", "void", "return", "do", "for", "auto", ]
 
