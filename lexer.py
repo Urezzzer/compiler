@@ -71,9 +71,12 @@ class Lexer(object):
                     self.current_state = LexerState.START
                 else:
                     self.current_state = LexerState.COMMENT
-            elif char == '\n' or char == " ":
-                self.analyse_nonsymbol_lexeme(''.join(self.buffer))
-                self.return_to_start()
+            elif char == " ":
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                else:
+                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.return_to_start()
             elif char in Constants.VALID_STRING:
                 if self.current_state != LexerState.STRING:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
@@ -83,6 +86,9 @@ class Lexer(object):
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.SEPARATOR)
                     self.current_state = LexerState.START
+            elif char == '\n':
+                self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                self.return_to_start()
             else:
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.add_to_lexicon(char, LexerToken.NOT_EXISTS)

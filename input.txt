@@ -1,1 +1,2 @@
-string a = '12abc12';
+string a = '12abc12 ;
+int t = 25;

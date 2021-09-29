@@ -4,6 +4,9 @@ KEYWORD      string
 IDENTIFIER   a                       
 OPERATOR     =                       
 SEPARATOR    '                       
-STRING       12abc12                 
-SEPARATOR    '                       
+STRING       12abc12 ;               
+KEYWORD      int                     
+IDENTIFIER   t                       
+OPERATOR     =                       
+INTEGER      25                      
 SEPARATOR    ;                       
