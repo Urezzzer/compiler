@@ -28,7 +28,7 @@ class Parser:
 
 def main():
     p = Parser()
-    p.parse('C:\input.txt', 'C:\output.txt')
+    p.parse('C:\My Files\Python\Compilator\input.txt', 'C:\My Files\Python\Compilator\output.txt')
 
 
 if __name__ == "__main__":

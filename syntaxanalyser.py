@@ -238,6 +238,9 @@ class SyntaxAnalyserRDP:
         elif self.is_current_token_an(LexerToken.BOOLEAN):
             self.output.append("<Factor> -> <Boolean>\n")
             factor = True
+        elif self.is_current_token_an(LexerToken.STRING):
+            self.output.append("<Factor> -> <String>\n")
+            factor = True
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
             if (self.Expression()):

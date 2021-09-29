@@ -2,7 +2,7 @@
 <Declaration> -> <Data-Type> <Assignment> | <Data-Type> <Assignment-Function>
 
 <Assignment-Function> -> <Identifier>(<Parameters>){<Statement>}
-<Parameters> -> <Data-Type> <Identifier> | epsilon | <Data-Type> <Identifier>, <Parameters>
+<Parameters> -> <Data-Type> <Identifier> | <Data-Type> <Identifier>, <Parameters> | epsilon
 
 <Assignment> -> <Identifier> = <Expression>;
 <Data-Type> -> int | boolean | float |  string | char | double | void
