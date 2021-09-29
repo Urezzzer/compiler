@@ -1,27 +1,70 @@
-Lexeme: string  Token: KEYWORD
-<Statement> -> <Declaration>
+Lexeme: for  Token: KEYWORD
+<Statement> -> <For-Loop>
+<For-loop> -> for (<Declaration><conditional>;<Declaration>) {<Statement>};
+Lexeme: (  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
 <Declaration> -> <Data-Type> <Assignment>
-Lexeme: a  Token: IDENTIFIER
+Lexeme: i  Token: IDENTIFIER
 <Assignment> -> <Identifier> = <Expression>;
 Lexeme: =  Token: OPERATOR
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: 12  Token: INTEGER
+Lexeme: 0  Token: INTEGER
 <Factor> -> <Integer>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
 Lexeme: ;  Token: SEPARATOR
-Lexeme: int  Token: KEYWORD
-<Statement> -> <Declaration>
+<Conditional> -> <Expression> <Conditional-Operator> <Expression>
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: a  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: <  Token: NOT_EXISTS
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 0  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
 <Declaration> -> <Data-Type> <Assignment>
 Lexeme: t  Token: IDENTIFIER
 <Assignment> -> <Identifier> = <Expression>;
 Lexeme: =  Token: OPERATOR
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: 5  Token: INTEGER
+Lexeme: b  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+Lexeme: +  Token: OPERATOR
+<Expression-Prime> -> + <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 1  Token: INTEGER
 <Factor> -> <Integer>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: )  Token: SEPARATOR
+Lexeme: {  Token: SEPARATOR
+Lexeme: c  Token: IDENTIFIER
+<Statement> -> <Assignment>
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: d  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+Lexeme: +  Token: OPERATOR
+<Expression-Prime> -> + <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: r  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: }  Token: SEPARATOR
 Lexeme: ;  Token: SEPARATOR
 Lexeme: $  Token: END_OF_FILE

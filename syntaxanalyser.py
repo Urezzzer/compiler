@@ -52,6 +52,7 @@ class SyntaxAnalyserRDP:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
+
     def backup(self):
         if self.current_token_index > 0:
             self.current_token_index -= 1
@@ -80,12 +81,12 @@ class SyntaxAnalyserRDP:
     def Declaration(self):
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
-
         if self.is_current_token_an(LexerToken.IDENTIFIER):
             if self.Assignment():
                 declaration = True
         else:
             self.output.append("Error: Not a valid identifier.\n")
+
         return declaration
 
     def Assignment(self):
@@ -145,19 +146,17 @@ class SyntaxAnalyserRDP:
     def For_Loop(self):
         for_loop = False
         self.output.append("<For-loop> -> for (<Declaration><conditional>;<Declaration>) {<Statement>};\n")
-        if self.token_is("("):
-            self.Declaration()
-            self.Conditional()
-            if self.token_is(";"):
-                self.Declaration()
-                if self.token_is(")"):
-                    if self.token_is("{"):
-                        self.Statement()
-                        if self.token_is("}"):
-                            if self.token_is(";"):
-                                for_loop = True
-        else:
-            self.output.append("Error: For loop missing closing \"whileend\".\n")
+        self.token_is("(")
+        self.token_in(Constants.VALID_DATA_TYPES)
+        self.Declaration()
+        self.Conditional()
+        self.token_is(";")
+        self.Declaration()
+        self.token_is(")")
+        self.token_is("{")
+        self.Statement()
+        self.token_is("}")
+        self.token_is(";")
 
         return for_loop
 
@@ -177,7 +176,6 @@ class SyntaxAnalyserRDP:
 
     def Expression(self):
         expression = False
-
         self.output.append("<Expression> -> <Term> <Expression-Prime>\n")
         if self.Term():
             if self.Expression_Prime():
