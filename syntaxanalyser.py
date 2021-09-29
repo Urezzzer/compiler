@@ -10,7 +10,6 @@ class SyntaxAnalyserRDP:
     def parse(self, tokens):
         self.tokens = tokens
 
-
         while not self.is_current_token_an(LexerToken.END_OF_FILE):
             self.Statement()
 
@@ -69,6 +68,9 @@ class SyntaxAnalyserRDP:
         elif self.token_is("if"):
             self.output.append("<Statement> -> <If-Statement>\n")
             start = self.If_Statement()
+        elif self.token_is("for"):
+            self.output.append("<Statement> -> <For-Loop>\n")
+            start = self.For_Loop()
         elif self.token_is("while"):
             self.output.append("<Statement> -> <While-Loop>\n")
             start = self.While_Loop()
@@ -84,7 +86,6 @@ class SyntaxAnalyserRDP:
                 declaration = True
         else:
             self.output.append("Error: Not a valid identifier.\n")
-
         return declaration
 
     def Assignment(self):
@@ -140,6 +141,25 @@ class SyntaxAnalyserRDP:
             self.output.append("<Else> -> epsilon\n")
 
         return True
+
+    def For_Loop(self):
+        for_loop = False
+        self.output.append("<For-loop> -> for (<Declaration><conditional>;<Declaration>) {<Statement>};\n")
+        if self.token_is("("):
+            self.Declaration()
+            self.Conditional()
+            if self.token_is(";"):
+                self.Declaration()
+                if self.token_is(")"):
+                    if self.token_is("{"):
+                        self.Statement()
+                        if self.token_is("}"):
+                            if self.token_is(";"):
+                                for_loop = True
+        else:
+            self.output.append("Error: For loop missing closing \"whileend\".\n")
+
+        return for_loop
 
     def While_Loop(self):
         while_loop = False

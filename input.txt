@@ -1,1 +1,1 @@
-string a = 12;
+for (int i = 0; a < 0;i = b + 1;) {c = d + r;};

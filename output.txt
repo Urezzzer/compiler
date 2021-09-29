@@ -1,13 +1,27 @@
-TOKENS       LEXEMES                 
-
-KEYWORD      int                     
-KEYWORD      main                    
-SEPARATOR    (                       
-SEPARATOR    )                       
-SEPARATOR    {                       
-KEYWORD      string                  
-IDENTIFIER   a                       
-OPERATOR     =                       
-INTEGER      12                      
-SEPARATOR    ;                       
-SEPARATOR    }                       
+Lexeme: string  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: a  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 12  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: t  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 5  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: $  Token: END_OF_FILE
