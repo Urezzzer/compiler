@@ -30,9 +30,9 @@ class LexerState(Enum):
 
 class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "/", "%"]
-    VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":"]
+    VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", "'", ".", ":", '"']
 
-    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "const", "main", "char", "double", "string", "void", "return", "do", "for", ]
+    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "const", "main", "char", "double", "string", "void", "return", "do", "for", "auto", ]
 
     DECIMAL = '.'
     COMMENT_START = ["/*", "//"]
@@ -41,5 +41,5 @@ class Constants(object):
     VALID_EOL_SYMBOLS = [';']
     TOKEN_END_OF_LINE = Listing("$", LexerToken.END_OF_FILE)
     VALID_CONDITIONAL_OPERATORS = ["=", "<", ">", "!"]
-    VALID_DATA_TYPES = ["int", "bool", "float", "char", "string", "double"]
+    VALID_DATA_TYPES = ["int", "bool", "float", "char", "string", "double", "void", "auto"]
     VALID_BOOLEAN_VALUES = ["true", "false"]
