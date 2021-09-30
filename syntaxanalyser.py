@@ -135,6 +135,8 @@ class SyntaxAnalyserRDP:
                     if self.token_is("{"):
                         while not self.token_is("}"):
                             self.Statement()
+                            if self.errors != 0:
+                                break
                         ifstate = self.Else()
                     else:
                         self.output.append("Error: Missing \"{\" keyword in If-Statement.\n")
@@ -188,6 +190,8 @@ class SyntaxAnalyserRDP:
             self.token_is("{")
             while not self.token_is("}"):
                 self.Statement()
+                if self.errors != 0:
+                    break
         else:
             self.output.append("<Else> -> epsilon\n")
         if not self.token_is(";"):
@@ -199,18 +203,23 @@ class SyntaxAnalyserRDP:
         for_loop = False
         self.output.append("<For-loop> -> for (<Declaration><conditional>;<Declaration>) {<Statement>};\n")
         if self.token_is("("):
-            self.token_in(Constants.VALID_DATA_TYPES)
-            self.Declaration()
-            self.Conditional()
-            self.token_is(";")
-            self.Declaration()
-            self.token_is(")")
-            self.token_is("{")
-            while not self.token_is("}"):
-                self.Statement()
-            if not self.token_is(";"):
-                self.output.append("Warning: Missing ';' at end of line.\n")
-                self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+            if self.token_in(Constants.VALID_DATA_TYPES):
+                self.Declaration()
+                self.Conditional()
+                self.token_is(";")
+                self.Declaration()
+                self.token_is(")")
+                self.token_is("{")
+                while not self.token_is("}"):
+                    self.Statement()
+                    if self.errors != 0:
+                        break
+                if not self.token_is(";"):
+                    self.output.append("Warning: Missing ';' at end of line.\n")
+                    self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+            else:
+                self.output.append("Error: Invalid data type.\n")
+                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("Error: Missing opening '(' at end of function.\n")
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
@@ -226,6 +235,8 @@ class SyntaxAnalyserRDP:
             self.token_is("{")
             while not self.token_is("}"):
                 self.Statement()
+                if self.errors != 0:
+                    break
             if not self.token_is(";"):
                 self.output.append("Warning: Missing ';' at end of line.\n")
                 self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
