@@ -1,5 +1,9 @@
-while (i < 1000) {
-i = '0;
-d = 5;
+while (d < 0) {
+if (a < b) {
+r = 9 - '5' * r;
+cos = pi - sin(pi/2);
+} else {
+int t = abs();
+};
 };
 
