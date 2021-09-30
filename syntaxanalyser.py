@@ -108,16 +108,22 @@ class SyntaxAnalyserRDP:
 
     def If_Statement(self):
         ifstate = False
-        self.output.append("<If-Statement> -> if <Conditional> then <Statement> <Else>\n")
-
-        if self.Conditional():
-            if self.token_is("then"):
-                self.Statement()
-                ifstate = self.Else()
+        self.output.append("<If-Statement> -> if (<Conditional>) {<Statement>} <Else>\n")
+        if self.token_is("("):
+            if self.Conditional():
+                if self.token_is(")"):
+                    if self.token_is("{"):
+                        while not self.token_is("}"):
+                            self.Statement()
+                        ifstate = self.Else()
+                    else:
+                        self.output.append("Error: Missing \"{\" keyword in If-Statement.\n")
+                else:
+                    self.output.append("Error: Missing \")\" keyword in If-Statement.\n")
             else:
-                self.output.append("Error: Missing \"then\" keyword in If-Statement.\n")
+                self.output.append("Error: Invalid conditional expression.\n")
         else:
-            self.output.append("Error: Invalid conditional expression.\n")
+            self.output.append("Error: Missing \"(\" keyword in If-Statement.\n")
 
         return ifstate
 
@@ -136,8 +142,10 @@ class SyntaxAnalyserRDP:
 
     def Else(self):
         if self.token_is("else"):
-            self.output.append("<Else> -> else <Statement>\n")
-            self.Statement()
+            self.output.append("<Else> -> else {<Statement>}\n")
+            self.token_is("{")
+            while not self.token_is("}"):
+                self.Statement()
         else:
             self.output.append("<Else> -> epsilon\n")
 
@@ -223,11 +231,30 @@ class SyntaxAnalyserRDP:
             self.output.append("<Term-Prime> -> epsilon\n")
         return term_prime
 
+    def Function_Parameters(self):
+        function_parameters = True
+        self.output.append("<Function-Parameters> -> <Expression> | <Expression>, <Function-Parameters>\n")
+        if self.Expression():
+            if self.token_is(","):
+                self.Function_Parameters()
+        else:
+            self.output.append("<Function-Parameters> ->  epsilon\n")
+        return function_parameters
+
+
     def Factor(self):
         factor = True
 
         if self.is_current_token_an(LexerToken.IDENTIFIER):
-            self.output.append("<Factor> -> <Identifier>\n")
+            if not self.token_is('('):
+                self.output.append("<Factor> -> <Identifier>\n")
+            else:
+                self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
+                if not self.token_is(')'):
+                    self.Function_Parameters()
+                    if not self.token_is(')'):
+                        self.output.append("Error: Missing closing ')' at end of function.\n")
+                        factor = False
             factor = True
         elif self.is_current_token_an(LexerToken.INTEGER):
             self.output.append("<Factor> -> <Integer>\n")
@@ -254,7 +281,7 @@ class SyntaxAnalyserRDP:
                     factor = False
             else:
                 self.output.append("Error: Invalid expression.\n")
-        else:
+        elif self.is_current_token_an(LexerToken.NOT_EXISTS):
             self.output.append(
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.\n")
             factor = False
