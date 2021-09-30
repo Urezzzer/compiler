@@ -90,7 +90,7 @@ Lexeme: 2  Token: INTEGER
 Lexeme: )  Token: SEPARATOR
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
-Warning: Missing ';' at end of line.
+Lexeme: ;  Token: SEPARATOR
 Lexeme: }  Token: SEPARATOR
 Lexeme: else  Token: KEYWORD
 <Else> -> else {<Statement>}
@@ -109,9 +109,8 @@ Lexeme: (  Token: SEPARATOR
 Lexeme: )  Token: SEPARATOR
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
-Warning: Missing ';' at end of line.
-Lexeme: }  Token: SEPARATOR
 Lexeme: ;  Token: SEPARATOR
 Lexeme: }  Token: SEPARATOR
 Lexeme: ;  Token: SEPARATOR
-Lexeme: $  Token: END_OF_FILE
+Lexeme: }  Token: SEPARATOR
+Lexeme: ;  Token: SEPARATOR

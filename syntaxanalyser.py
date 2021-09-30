@@ -12,8 +12,10 @@ class SyntaxAnalyserRDP:
     def parse(self, tokens):
         self.tokens = tokens
 
-        while not self.is_current_token_an(LexerToken.END_OF_FILE):
+        while not self.is_current_token_an([LexerToken.END_OF_FILE]):
             self.Statement()
+            if self.errors != 0:
+                break
 
     def write_output_to_file(self, filename):
         with open(filename, "w") as f:
@@ -28,9 +30,7 @@ class SyntaxAnalyserRDP:
         with open('C:\My Files\Python\Compilator\warnings.txt', "w") as f:
             f.write("{:<20} {:<24}\n\n".format("WARNING", "INDEX_TOKEN"))
             for warning in self.warnings:
-                print(warning.type)
                 f.write("{:<24} {:<24}\n".format(warning.type, warning.index))
-
 
     def token_is(self, token_to_match):
         if self.tokens[self.current_token_index].lexeme == token_to_match:
@@ -53,8 +53,8 @@ class SyntaxAnalyserRDP:
             else:
                 return False
 
-    def is_current_token_an(self, token_type):
-        if self.tokens[self.current_token_index].token == token_type:
+    def is_current_token_an(self, token_types):
+        if self.tokens[self.current_token_index].token in token_types:
             self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
                                "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
             self.advance_token()
@@ -69,7 +69,6 @@ class SyntaxAnalyserRDP:
 
             self.current_token_index += 1
 
-
     def backup(self):
         if self.current_token_index > 0:
             self.current_token_index -= 1
@@ -77,7 +76,7 @@ class SyntaxAnalyserRDP:
     def Statement(self):
         start = False
 
-        if self.is_current_token_an(LexerToken.IDENTIFIER):
+        if self.is_current_token_an([LexerToken.IDENTIFIER]):
             self.output.append("<Statement> -> <Assignment>\n")
             start = self.Assignment()
         elif self.token_in(Constants.VALID_DATA_TYPES):
@@ -98,7 +97,7 @@ class SyntaxAnalyserRDP:
     def Declaration(self):
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
-        if self.is_current_token_an(LexerToken.IDENTIFIER):
+        if self.is_current_token_an([LexerToken.IDENTIFIER]):
             if self.Assignment():
                 declaration = True
         else:
@@ -172,11 +171,11 @@ class SyntaxAnalyserRDP:
                     self.output.append("Error: Unrecognized conditional operator.\n")
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             if self.token_is("<") or self.token_is(">"):
-                if self.token_is("=") or self.is_current_token_an(LexerToken.IDENTIFIER) or \
-                        self.is_current_token_an(LexerToken.STRING) or self.is_current_token_an(LexerToken.INTEGER) \
-                        or self.is_current_token_an(LexerToken.REAL) or self.is_current_token_an(LexerToken.BOOLEAN):
-                        if self.Expression():
-                            conditional = True
+                if self.token_is("=") or self.is_current_token_an([LexerToken.IDENTIFIER, LexerToken.STRING,
+                                                                   LexerToken.INTEGER, LexerToken.REAL,
+                                                                   LexerToken.BOOLEAN]):
+                    if self.Expression():
+                        conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.\n")
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
@@ -199,34 +198,40 @@ class SyntaxAnalyserRDP:
     def For_Loop(self):
         for_loop = False
         self.output.append("<For-loop> -> for (<Declaration><conditional>;<Declaration>) {<Statement>};\n")
-        self.token_is("(")
-        self.token_in(Constants.VALID_DATA_TYPES)
-        self.Declaration()
-        self.Conditional()
-        self.token_is(";")
-        self.Declaration()
-        self.token_is(")")
-        self.token_is("{")
-        while not self.token_is("}"):
-            self.Statement()
-        if not self.token_is(";"):
-            self.output.append("Warning: Missing ';' at end of line.\n")
-            self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+        if self.token_is("("):
+            self.token_in(Constants.VALID_DATA_TYPES)
+            self.Declaration()
+            self.Conditional()
+            self.token_is(";")
+            self.Declaration()
+            self.token_is(")")
+            self.token_is("{")
+            while not self.token_is("}"):
+                self.Statement()
+            if not self.token_is(";"):
+                self.output.append("Warning: Missing ';' at end of line.\n")
+                self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+        else:
+            self.output.append("Error: Missing opening '(' at end of function.\n")
+            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return for_loop
 
     def While_Loop(self):
         while_loop = False
         self.output.append("<While-Loop> -> while (<conditional>) {<Statement>};\n ")
-        self.token_is("(")
-        self.Conditional()
-        self.token_is(")")
-        self.token_is("{")
-        while not self.token_is("}"):
-            self.Statement()
-        if not self.token_is(";"):
-            self.output.append("Warning: Missing ';' at end of line.\n")
-            self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+        if self.token_is("("):
+            self.Conditional()
+            self.token_is(")")
+            self.token_is("{")
+            while not self.token_is("}"):
+                self.Statement()
+            if not self.token_is(";"):
+                self.output.append("Warning: Missing ';' at end of line.\n")
+                self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+        else:
+            self.output.append("Error: Missing opening '(' at end of function.\n")
+            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return while_loop
 
@@ -291,11 +296,10 @@ class SyntaxAnalyserRDP:
             self.output.append("<Function-Parameters> ->  epsilon\n")
         return function_parameters
 
-
     def Factor(self):
         factor = True
 
-        if self.is_current_token_an(LexerToken.IDENTIFIER):
+        if self.is_current_token_an([LexerToken.IDENTIFIER]):
             if not self.token_is('('):
                 self.output.append("<Factor> -> <Identifier>\n")
             else:
@@ -304,20 +308,21 @@ class SyntaxAnalyserRDP:
                     self.Function_Parameters()
                     if not self.token_is(')'):
                         self.output.append("Error: Missing closing ')' at end of function.\n")
+                        self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         factor = False
             factor = True
-        elif self.is_current_token_an(LexerToken.INTEGER):
+        elif self.is_current_token_an([LexerToken.INTEGER]):
             self.output.append("<Factor> -> <Integer>\n")
             factor = True
-        elif self.is_current_token_an(LexerToken.REAL):
+        elif self.is_current_token_an([LexerToken.REAL]):
             self.output.append("<Factor> -> <Float>\n")
             factor = True
-        elif self.is_current_token_an(LexerToken.BOOLEAN):
+        elif self.is_current_token_an([LexerToken.BOOLEAN]):
             self.output.append("<Factor> -> <Boolean>\n")
             factor = True
         elif self.token_is('"') or self.token_is("'"):
             self.output.append("<Factor> -> <String>\n")
-            self.is_current_token_an(LexerToken.STRING)
+            self.is_current_token_an([LexerToken.STRING])
             if not (self.token_is('"') or self.token_is("'")):
                 self.output.append("Warning: Missing closing string's separator at end of expression.\n")
                 self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
@@ -334,7 +339,7 @@ class SyntaxAnalyserRDP:
             else:
                 self.output.append("Error: Invalid expression.\n")
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
-        elif self.is_current_token_an(LexerToken.NOT_EXISTS):
+        elif self.is_current_token_an([LexerToken.NOT_EXISTS]):
             self.output.append(
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.\n")
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))

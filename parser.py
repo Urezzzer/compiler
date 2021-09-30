@@ -33,8 +33,6 @@ def main():
     p = Parser()
     p.parse('C:\My Files\Python\Compilator\input.txt', 'C:\My Files\Python\Compilator\output_lexer.txt',
             'C:\My Files\Python\Compilator\output_syntax.txt')
-    #l = Lexer()
-    #l.parse_file('C:\My Files\Python\Compilator\input.txt', 'C:\My Files\Python\Compilator\output.txt')
 
 
 if __name__ == "__main__":
