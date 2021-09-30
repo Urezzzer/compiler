@@ -3,7 +3,6 @@ from collections import namedtuple
 
 Listing = namedtuple("Listing", "lexeme, token")
 
-
 # token types
 class LexerToken(Enum):
     KEYWORD = 1,

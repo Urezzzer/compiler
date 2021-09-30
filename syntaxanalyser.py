@@ -50,6 +50,9 @@ class SyntaxAnalyserRDP:
 
     def advance_token(self):
         if self.current_token_index < (len(self.tokens) - 1):
+            new_listing = Listing(self.tokens[self.current_token_index].token,
+                                  self.tokens[self.current_token_index].lexeme)
+
             self.current_token_index += 1
 
 
