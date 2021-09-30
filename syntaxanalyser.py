@@ -148,7 +148,8 @@ class SyntaxAnalyserRDP:
                 self.Statement()
         else:
             self.output.append("<Else> -> epsilon\n")
-
+        if not self.token_is(";"):
+            self.output.append("Warning: Missing ';' at end of line.\n")
         return True
 
     def For_Loop(self):
@@ -164,7 +165,8 @@ class SyntaxAnalyserRDP:
         self.token_is("{")
         while not self.token_is("}"):
             self.Statement()
-        self.token_is(";")
+        if not self.token_is(";"):
+            self.output.append("Warning: Missing ';' at end of line.\n")
 
         return for_loop
 
@@ -177,7 +179,8 @@ class SyntaxAnalyserRDP:
         self.token_is("{")
         while not self.token_is("}"):
             self.Statement()
-        self.token_is(";")
+        if not self.token_is(";"):
+            self.output.append("Warning: Missing ';' at end of line.\n")
 
         return while_loop
 
