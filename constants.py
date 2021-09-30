@@ -3,7 +3,6 @@ from collections import namedtuple
 
 Listing = namedtuple("Listing", "lexeme, token")
 Error = namedtuple("Error", ['type', 'index'])
-Warning = namedtuple("Warning", ['type', 'index'])
 
 # token types
 class LexerToken(Enum):
@@ -35,9 +34,6 @@ class ErrorTypes(Enum):
     NOT_VALID = 0,
     INVALID = 1,
     MISSING = 2
-
-class WarningTypes(Enum):
-    MISSING = 0,
 
 
 class Constants(object):

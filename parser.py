@@ -22,7 +22,7 @@ class Parser:
                         self.lexer.parse(line)
 
                 self.lexer.lexicon.append(Constants.TOKEN_END_OF_LINE)
-                self.syntax_analyser.parse(self.lexer.lexicon)
+                self.syntax_analyser.parse(self.lexer.lexicon, self.lexer.positions)
                 self.lexer.write_to_file(output_file_for_lexer)
                 self.syntax_analyser.write_output_to_file(output_file_for_syntax)
         else:

@@ -1,8 +1,1 @@
-while (d < 0) {
-if (a >= b) {
-r = 9.0 - '5' * r;
-cos = pi - sin(pi/2);
-} else {
-int intvalue = abs();
-};
-};
+int i = 5 int i = 5

@@ -9,7 +9,14 @@ class Lexer(object):
         self.current_state = LexerState.START
         self.lexicon = []
 
+        self.positions = []
+        self.current_pos = {
+            'row': 0,
+            'pos': 0
+        }
+
     def parse(self, line):
+        self.current_pos['pos'] = 0
         for char in line:
             if char.isalpha():
                 if self.current_state == LexerState.STRING:
@@ -75,6 +82,7 @@ class Lexer(object):
                 if self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
                 else:
+                    self.positions.append(self.current_pos.copy())
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.return_to_start()
             elif char in Constants.VALID_STRING:
@@ -87,13 +95,15 @@ class Lexer(object):
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.current_state = LexerState.START
             elif char == '\n':
+                self.positions.append(self.current_pos.copy())
+                self.current_pos['row'] = self.current_pos['row'] + 1
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.return_to_start()
             else:
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.add_to_lexicon(char, LexerToken.NOT_EXISTS)
                 self.current_state = LexerState.START
-
+            self.current_pos['pos'] = self.current_pos['pos'] + 1
 
     def return_to_start(self):
         if self.current_state != LexerState.COMMENT:
