@@ -13,14 +13,14 @@
 <Conditional> -> <Expression> <Conditional-Operator> <Expression>
 <Conditional-Operator> -> "==" | "<=" | ">=" | "!=" | > | <
 
-<For-loop> -> for (<Declaration>;<conditional>; <Declaration>) {<Statement>};
-<While-loop> -> while (<conditional>) { <Statement> };
+<For-loop> -> for (<Declaration>; <conditional>; <Declaration>) {<Statement>};
+<While-loop> -> while (<conditional>) {<Statement>};
 
 <Expression> -> <Term> <Expression-Prime>
 <Expression-Prime> -> + <Term> <Expression-Prime> | - <Term> <Expression-Prime> | epsilon
 <Term> -> <Factor> <Term-Prime>
 <Term-Prime> -> * <Factor> <Term-Prime> | / <Factor> <Term-Prime> | epsilon
-<Factor> -> (<Expression>) | <Identifier> | <Integer> | <Float> | <Boolean> | <String>
+<Factor> -> (<Expression>) | <Identifier> | <Integer> | <Float> | <Boolean> | '<String>' | "<String>"
 
 <Separator> -> } | ) | ( | {
 
