@@ -9,12 +9,11 @@ import os
 
 class Parser:
     def __init__(self):
-        self.tokens = []
         self.lexer = Lexer()
         self.syntax_analyser = SyntaxAnalyserRDP()
         self.semantic_analyser = SemanticAnalyser()
 
-    def parse(self, input_file, output_file_for_lexer, output_file_for_syntax):
+    def parse(self, input_file, output_file_for_lexer, output_file_for_syntax, output_file_for_semantic):
         if os.path.exists(input_file):
             with open(input_file, "r") as f:
                 for line in f:
@@ -25,7 +24,10 @@ class Parser:
                 self.syntax_analyser.parse(self.lexer.lexicon, self.lexer.positions)
                 self.lexer.write_to_file(output_file_for_lexer)
                 self.syntax_analyser.write_output_to_file(output_file_for_syntax)
-                print(self.syntax_analyser.ids)
+                self.semantic_analyser.parse(self.syntax_analyser.tokens, self.syntax_analyser.positions,
+                                             self.syntax_analyser.attributes, self.syntax_analyser.ids, self.syntax_analyser.errors)
+                self.semantic_analyser.write_output_to_file(output_file_for_semantic)
+                print(self.syntax_analyser.positions)
         else:
             print(f"File \"{input_file}\" does not exist in the current directory.")
 
@@ -33,7 +35,7 @@ class Parser:
 def main():
     p = Parser()
     p.parse('C:\My Files\Python\Compilator\input.txt', 'C:\My Files\Python\Compilator\output_lexer.txt',
-            'C:\My Files\Python\Compilator\output_syntax.txt')
+            'C:\My Files\Python\Compilator\output_syntax.txt', 'C:\My Files\Python\Compilator\output_semantic.txt')
 
 
 if __name__ == "__main__":

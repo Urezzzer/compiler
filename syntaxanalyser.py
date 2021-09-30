@@ -17,7 +17,7 @@ class SyntaxAnalyserRDP:
 
         while not self.is_current_token_an([LexerToken.END_OF_FILE]):
             self.Statement()
-            if self.errors != 0:
+            if len(self.errors) != 0:
                 break
 
     def write_output_to_file(self, filename):
@@ -25,10 +25,6 @@ class SyntaxAnalyserRDP:
             for line in self.output:
                 f.write(line)
 
-        with open('C:\My Files\Python\Compilator\errors.txt', "w") as f:
-            f.write("{:<20} {:<24}\n\n".format("ERROR", "INDEX_TOKEN"))
-            for error in self.errors:
-                f.write("{:<24} {:<24}\n".format(error.type, error.index))
 
     def token_is(self, token_to_match):
         if self.tokens[self.current_token_index].lexeme == token_to_match:
@@ -64,12 +60,15 @@ class SyntaxAnalyserRDP:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
-    def backup(self):
+    def backup(self, flag):
         if self.current_token_index > 0:
             self.current_token_index -= 1
-            lexeme = self.tokens[self.current_token_index].lexeme
+            if flag == 'lexeme':
+                value = self.tokens[self.current_token_index].lexeme
+            if flag == 'token':
+                value = self.tokens[self.current_token_index].token
             self.advance_token()
-            return lexeme
+            return value
 
     def Statement(self):
         start = False
@@ -96,7 +95,7 @@ class SyntaxAnalyserRDP:
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
-            self.ids.add(self.backup())
+            self.ids.add(self.backup('lexeme'))
             if self.Assignment():
                 declaration = True
         else:

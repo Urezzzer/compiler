@@ -1,5 +1,10 @@
 TOKENS       LEXEMES                 
 
+KEYWORD      int                     
+IDENTIFIER   d                       
+OPERATOR     =                       
+INTEGER      0                       
+SEPARATOR    ;                       
 KEYWORD      while                   
 SEPARATOR    (                       
 IDENTIFIER   d                       
