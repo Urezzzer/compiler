@@ -44,6 +44,6 @@ class Constants(object):
     VALID_IDENTIFIER_SYMBOLS = ["$"]
     VALID_EOL_SYMBOLS = [';']
     TOKEN_END_OF_LINE = Listing("$", LexerToken.END_OF_FILE)
-    VALID_CONDITIONAL_OPERATORS = ["=", "<", ">", "!"]
+    VALID_CONDITIONAL_OPERATORS = ["==", "<", ">", "!", "<=", ">="]
     VALID_DATA_TYPES = ["int", "bool", "float", "char", "string", "double", "void"]
     VALID_BOOLEAN_VALUES = ["true", "false"]
