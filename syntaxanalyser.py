@@ -242,7 +242,7 @@ class SyntaxAnalyserRDP:
             self.output.append("<Factor> -> <String>\n")
             self.is_current_token_an(LexerToken.STRING)
             if not (self.token_is('"') or self.token_is("'")):
-                self.output.append("Error: Missing closing string's separator at end of expression.\n")
+                self.output.append("Warning: Missing closing string's separator at end of expression.\n")
             factor = True
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
