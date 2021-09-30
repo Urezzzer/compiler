@@ -24,8 +24,21 @@ Lexeme: i  Token: IDENTIFIER
 Lexeme: =  Token: OPERATOR
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: '0'  Token: STRING
+Lexeme: '  Token: OPERATOR
 <Factor> -> <String>
+Lexeme: 0;  Token: STRING
+Error: Missing closing string's separator at end of expression.
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Warning: Missing ';' at end of line.
+Lexeme: d  Token: IDENTIFIER
+<Statement> -> <Assignment>
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 5  Token: INTEGER
+<Factor> -> <Integer>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
 Lexeme: ;  Token: SEPARATOR
