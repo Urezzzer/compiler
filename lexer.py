@@ -80,11 +80,11 @@ class Lexer(object):
             elif char in Constants.VALID_STRING:
                 if self.current_state != LexerState.STRING:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
-                    self.append_to_buffer(char)
+                    self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.current_state = LexerState.STRING
                 else:
-                    self.append_to_buffer(char)
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.current_state = LexerState.START
             elif char == '\n':
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
