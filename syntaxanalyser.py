@@ -135,11 +135,26 @@ class SyntaxAnalyserRDP:
         self.output.append("<Conditional> -> <Expression> <Conditional-Operator> <Expression>\n")
 
         if self.Expression():
-            if self.token_in(Constants.VALID_CONDITIONAL_OPERATORS):
-                if self.Expression():
-                    conditional = True
-            else:
-                self.output.append("Error: Unrecognized conditional operator.\n")
+            if self.token_is("="):
+                if self.token_is("="):
+                    if self.Expression():
+                        conditional = True
+                else:
+                    self.output.append("Error: Unrecognized conditional operator.\n")
+            if self.token_is("!"):
+                if self.token_is("="):
+                    if self.Expression():
+                        conditional = True
+                else:
+                    self.output.append("Error: Unrecognized conditional operator.\n")
+            if self.token_is("<") or self.token_is(">"):
+                if self.token_is("=") or self.is_current_token_an(LexerToken.IDENTIFIER) or \
+                        self.is_current_token_an(LexerToken.STRING) or self.is_current_token_an(LexerToken.INTEGER) \
+                        or self.is_current_token_an(LexerToken.REAL) or self.is_current_token_an(LexerToken.BOOLEAN):
+                        if self.Expression():
+                            conditional = True
+                else:
+                    self.output.append("Error: Unrecognized conditional operator.\n")
 
         return conditional
 
