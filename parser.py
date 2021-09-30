@@ -1,6 +1,7 @@
 from syntaxanalyser import SyntaxAnalyserRDP
 from lexer import Lexer
 from constants import *
+from semanticanalyser import SemanticAnalyser
 
 import sys
 import os
@@ -11,6 +12,7 @@ class Parser:
         self.tokens = []
         self.lexer = Lexer()
         self.syntax_analyser = SyntaxAnalyserRDP()
+        self.semantic_analyser = SemanticAnalyser()
 
     def parse(self, input_file, output_file):
         if os.path.exists(input_file):
