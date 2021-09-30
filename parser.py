@@ -25,6 +25,7 @@ class Parser:
                 self.syntax_analyser.parse(self.lexer.lexicon, self.lexer.positions)
                 self.lexer.write_to_file(output_file_for_lexer)
                 self.syntax_analyser.write_output_to_file(output_file_for_syntax)
+                print(self.syntax_analyser.ids)
         else:
             print(f"File \"{input_file}\" does not exist in the current directory.")
 

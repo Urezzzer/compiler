@@ -5,9 +5,11 @@ class SyntaxAnalyserRDP:
     def __init__(self):
         self.tokens = []
         self.positions = []
+        self.attributes = []
         self.current_token_index = 0
         self.output = []
         self.errors = []
+        self.ids = set()
 
     def parse(self, tokens, positions):
         self.tokens = tokens
@@ -60,14 +62,14 @@ class SyntaxAnalyserRDP:
 
     def advance_token(self):
         if self.current_token_index < (len(self.tokens) - 1):
-            new_listing = Listing(self.tokens[self.current_token_index].token,
-                                  self.tokens[self.current_token_index].lexeme)
-
             self.current_token_index += 1
 
     def backup(self):
         if self.current_token_index > 0:
             self.current_token_index -= 1
+            lexeme = self.tokens[self.current_token_index].lexeme
+            self.advance_token()
+            return lexeme
 
     def Statement(self):
         start = False
@@ -94,6 +96,7 @@ class SyntaxAnalyserRDP:
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
+            self.ids.add(self.backup())
             if self.Assignment():
                 declaration = True
         else:
