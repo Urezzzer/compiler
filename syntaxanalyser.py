@@ -187,12 +187,14 @@ class SyntaxAnalyserRDP:
     def Else(self):
         if self.token_is("else"):
             self.output.append("<Else> -> else {<Statement>}\n")
-            self.token_is("{")
-            while not self.token_is("}"):
-                self.Statement()
-                if len(self.errors) != 0:
-                    break
-            self.token_is("}")
+            if self.token_is("{"):
+                while not self.token_is("}"):
+                    self.Statement()
+                    if len(self.errors) != 0:
+                        break
+            else:
+                self.output.append("Error: Missing \"{\" at end of function.\n")
+                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         else:
             self.output.append("<Else> -> epsilon\n")
         if not self.token_is(";"):
@@ -224,7 +226,7 @@ class SyntaxAnalyserRDP:
                 self.output.append("Error: Invalid data type.\n")
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
-            self.output.append("Error: Missing opening '(' at end of function.\n")
+            self.output.append("Error: Missing \"(\" at end of function.\n")
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return for_loop
@@ -244,7 +246,7 @@ class SyntaxAnalyserRDP:
                 self.output.append("Warning: Missing ';' at end of line.\n")
                 self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
         else:
-            self.output.append("Error: Missing opening '(' at end of function.\n")
+            self.output.append("Error: Missing \"(\" at end of function.\n")
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return while_loop
@@ -321,7 +323,7 @@ class SyntaxAnalyserRDP:
                 if not self.token_is(')'):
                     self.Function_Parameters()
                     if not self.token_is(')'):
-                        self.output.append("Error: Missing closing ')' at end of function.\n")
+                        self.output.append("Error: Missing \")\" at end of function.\n")
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         factor = False
             factor = True
@@ -347,7 +349,7 @@ class SyntaxAnalyserRDP:
                 if self.token_is(")"):
                     factor = True
                 else:
-                    self.output.append("Error: Missing closing ')' at end of expression.\n")
+                    self.output.append("Error: Missing \")\" at end of expression.\n")
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                     factor = False
             else:

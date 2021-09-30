@@ -1,19 +1,116 @@
-Lexeme: int  Token: KEYWORD
-<Statement> -> <Declaration>
-<Declaration> -> <Data-Type> <Assignment>
+Lexeme: while  Token: KEYWORD
+<Statement> -> <While-Loop>
+<While-Loop> -> while (<conditional>) {<Statement>};
+ Lexeme: (  Token: SEPARATOR
+<Conditional> -> <Expression> <Conditional-Operator> <Expression>
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: d  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: <  Token: OPERATOR
+Lexeme: 0  Token: INTEGER
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: )  Token: SEPARATOR
+Lexeme: {  Token: SEPARATOR
+Lexeme: if  Token: KEYWORD
+<Statement> -> <If-Statement>
+<If-Statement> -> if (<Conditional>) {<Statement>} <Else>
+Lexeme: (  Token: SEPARATOR
+<Conditional> -> <Expression> <Conditional-Operator> <Expression>
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: a  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: >  Token: OPERATOR
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: b  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: )  Token: SEPARATOR
+Lexeme: {  Token: SEPARATOR
 Lexeme: r  Token: IDENTIFIER
+<Statement> -> <Assignment>
 <Assignment> -> <Identifier> = <Expression>;
 Lexeme: =  Token: OPERATOR
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: 5  Token: INTEGER
-<Factor> -> <Integer>
+Lexeme: 9.0  Token: REAL
+<Factor> -> <Float>
 <Term-Prime> -> epsilon
-Lexeme: +  Token: OPERATOR
-<Expression-Prime> -> + <Term> <Expression-Prime>
+Lexeme: -  Token: OPERATOR
+<Expression-Prime> -> - <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: 4.f  Token: INVALID
-Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.
+Lexeme: '  Token: OPERATOR
+<Factor> -> <String>
+Lexeme: 5  Token: STRING
+Lexeme: '  Token: OPERATOR
+Lexeme: *  Token: OPERATOR
+<Term-Prime> -> * <Factor> <Term-Prime>
+Lexeme: r  Token: IDENTIFIER
+<Factor> -> <Identifier>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: cos  Token: IDENTIFIER
+<Statement> -> <Assignment>
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: pi  Token: IDENTIFIER
+<Factor> -> <Identifier>
+<Term-Prime> -> epsilon
+Lexeme: -  Token: OPERATOR
+<Expression-Prime> -> - <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: sin  Token: IDENTIFIER
+Lexeme: (  Token: SEPARATOR
+<Factor> -> <Identifier>(<Function-Parameters>)
+<Function-Parameters> -> <Expression> | <Expression>, <Function-Parameters>
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: pi  Token: IDENTIFIER
+<Factor> -> <Identifier>
+Lexeme: /  Token: OPERATOR
+<Term-Prime> -> / <Factor> <Term-Prime>
+Lexeme: 2  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: )  Token: SEPARATOR
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: }  Token: SEPARATOR
+Lexeme: else  Token: KEYWORD
+<Else> -> else {<Statement>}
+Lexeme: {  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: intvalue  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: abs  Token: IDENTIFIER
+Lexeme: (  Token: SEPARATOR
+<Factor> -> <Identifier>(<Function-Parameters>)
+Lexeme: )  Token: SEPARATOR
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: }  Token: SEPARATOR
+Lexeme: ;  Token: SEPARATOR
+Lexeme: }  Token: SEPARATOR
 Lexeme: ;  Token: SEPARATOR

@@ -1,1 +1,8 @@
-int r = 5 + 4.f;
+while (d < 0) {
+if (a >= b) {
+r = 9.0 - '5' * r;
+cos = pi - sin(pi/2);
+} else {
+int intvalue = abs();
+};
+};
