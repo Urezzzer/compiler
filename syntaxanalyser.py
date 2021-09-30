@@ -154,8 +154,8 @@ class SyntaxAnalyserRDP:
         self.Declaration()
         self.token_is(")")
         self.token_is("{")
-        self.Statement()
-        self.token_is("}")
+        while not self.token_is("}"):
+            self.Statement()
         self.token_is(";")
 
         return for_loop
@@ -167,8 +167,8 @@ class SyntaxAnalyserRDP:
         self.Conditional()
         self.token_is(")")
         self.token_is("{")
-        self.Statement()
-        self.token_is("}")
+        while not self.token_is("}"):
+            self.Statement()
         self.token_is(";")
 
         return while_loop
@@ -238,8 +238,11 @@ class SyntaxAnalyserRDP:
         elif self.is_current_token_an(LexerToken.BOOLEAN):
             self.output.append("<Factor> -> <Boolean>\n")
             factor = True
-        elif self.is_current_token_an(LexerToken.STRING):
+        elif self.token_is('"') or self.token_is("'"):
             self.output.append("<Factor> -> <String>\n")
+            self.is_current_token_an(LexerToken.STRING)
+            if not (self.token_is('"') or self.token_is("'")):
+                self.output.append("Error: Missing closing string's separator at end of expression.\n")
             factor = True
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
@@ -253,7 +256,7 @@ class SyntaxAnalyserRDP:
                 self.output.append("Error: Invalid expression.\n")
         else:
             self.output.append(
-                "Error: Unrecognized value. Factor must be an integer, float, identifier or expression.\n")
+                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.\n")
             factor = False
 
         return factor
