@@ -1,1 +1,0 @@
-Error: No inizializated identifier.  Row = 3 , Position = 7

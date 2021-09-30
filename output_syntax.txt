@@ -11,6 +11,97 @@ Lexeme: 0  Token: INTEGER
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
 Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: r  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 1  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: a  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 1  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: b  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 1  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: cos  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 0  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: pi  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 1  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: sin  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 1  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: abs  Token: IDENTIFIER
+<Assignment> -> <Identifier> = <Expression>;
+Lexeme: =  Token: OPERATOR
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 0  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
 Lexeme: while  Token: KEYWORD
 <Statement> -> <While-Loop>
 <While-Loop> -> while (<conditional>) {<Statement>};

@@ -44,9 +44,7 @@ class SemanticAnalyser:
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if not self.ids.issuperset([self.backup('lexeme')]):
                     self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
-                    self.output.append("Error: No inizializated identifier.  Row = {} , Position = {}\n".format(
-                        self.positions[self.current_token_index + 1]['row'],
-                        self.positions[self.current_token_index + 1]['pos']))
+                    self.output.append("Error: No inizializated identifier.\n")
             self.advance_token()
             if len(self.errors) != 0:
                 break
