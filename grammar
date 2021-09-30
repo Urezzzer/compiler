@@ -6,7 +6,7 @@
 <Assignment> -> <Identifier> = <Expression>;
 
 <If-statement> -> if (<conditional>) {<Statement>} <Else>
-<Else> -> else {<Statement>};| ;
+<Else> -> else {<Statement>}; | ;
 
 <Conditional> -> <Expression> <Conditional-Operator> <Expression>
 <Conditional-Operator> -> "==" | "<=" | ">=" | "!=" | > | <

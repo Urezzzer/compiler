@@ -135,7 +135,7 @@ class SyntaxAnalyserRDP:
                     if self.token_is("{"):
                         while not self.token_is("}"):
                             self.Statement()
-                            if self.errors != 0:
+                            if len(self.errors) != 0:
                                 break
                         ifstate = self.Else()
                     else:
@@ -190,8 +190,9 @@ class SyntaxAnalyserRDP:
             self.token_is("{")
             while not self.token_is("}"):
                 self.Statement()
-                if self.errors != 0:
+                if len(self.errors) != 0:
                     break
+            self.token_is("}")
         else:
             self.output.append("<Else> -> epsilon\n")
         if not self.token_is(";"):
@@ -206,17 +207,19 @@ class SyntaxAnalyserRDP:
             if self.token_in(Constants.VALID_DATA_TYPES):
                 self.Declaration()
                 self.Conditional()
-                self.token_is(";")
-                self.Declaration()
-                self.token_is(")")
-                self.token_is("{")
-                while not self.token_is("}"):
-                    self.Statement()
-                    if self.errors != 0:
-                        break
-                if not self.token_is(";"):
-                    self.output.append("Warning: Missing ';' at end of line.\n")
-                    self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+                if self.token_is(";"):
+                    self.Declaration()
+                    self.token_is(")")
+                    self.token_is("{")
+                    while not self.token_is("}"):
+                        self.Statement()
+                        if len(self.errors) != 0:
+                            break
+                    if not self.token_is(";"):
+                         self.output.append("Warning: Missing ';' at end of line.\n")
+                         self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
+                else:
+                    ...
             else:
                 self.output.append("Error: Invalid data type.\n")
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
@@ -235,7 +238,7 @@ class SyntaxAnalyserRDP:
             self.token_is("{")
             while not self.token_is("}"):
                 self.Statement()
-                if self.errors != 0:
+                if len(self.errors) != 0:
                     break
             if not self.token_is(";"):
                 self.output.append("Warning: Missing ';' at end of line.\n")
@@ -355,5 +358,8 @@ class SyntaxAnalyserRDP:
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.\n")
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             factor = False
-
+        elif self.is_current_token_an([LexerToken.INVALID]):
+            self.output.append(
+                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.\n")
+            self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         return factor
