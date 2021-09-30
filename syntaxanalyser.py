@@ -6,6 +6,8 @@ class SyntaxAnalyserRDP:
         self.tokens = []
         self.current_token_index = 0
         self.output = []
+        self.errors = []
+        self.warnings = []
 
     def parse(self, tokens):
         self.tokens = tokens
@@ -17,6 +19,18 @@ class SyntaxAnalyserRDP:
         with open(filename, "w") as f:
             for line in self.output:
                 f.write(line)
+
+        with open('C:\My Files\Python\Compilator\errors.txt', "w") as f:
+            f.write("{:<20} {:<24}\n\n".format("ERROR", "INDEX_TOKEN"))
+            for error in self.errors:
+                f.write("{:<24} {:<24}\n".format(error.type, error.index))
+
+        with open('C:\My Files\Python\Compilator\warnings.txt', "w") as f:
+            f.write("{:<20} {:<24}\n\n".format("WARNING", "INDEX_TOKEN"))
+            for warning in self.warnings:
+                print(warning.type)
+                f.write("{:<24} {:<24}\n".format(warning.type, warning.index))
+
 
     def token_is(self, token_to_match):
         if self.tokens[self.current_token_index].lexeme == token_to_match:
@@ -89,6 +103,7 @@ class SyntaxAnalyserRDP:
                 declaration = True
         else:
             self.output.append("Error: Not a valid identifier.\n")
+            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
         return declaration
 
@@ -101,11 +116,14 @@ class SyntaxAnalyserRDP:
                 assignment = True
             else:
                 self.output.append("Error: Invalid expression.\n")
+                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("Error: Missing '='.\n")
+            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         if not self.token_in(Constants.VALID_EOL_SYMBOLS):
             self.output.append("Warning: Missing ';' at end of line.\n")
+            self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
 
         return assignment
 
@@ -121,12 +139,16 @@ class SyntaxAnalyserRDP:
                         ifstate = self.Else()
                     else:
                         self.output.append("Error: Missing \"{\" keyword in If-Statement.\n")
+                        self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append("Error: Missing \")\" keyword in If-Statement.\n")
+                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Invalid conditional expression.\n")
+                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("Error: Missing \"(\" keyword in If-Statement.\n")
+            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return ifstate
 
@@ -141,12 +163,14 @@ class SyntaxAnalyserRDP:
                         conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.\n")
+                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             if self.token_is("!"):
                 if self.token_is("="):
                     if self.Expression():
                         conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.\n")
+                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             if self.token_is("<") or self.token_is(">"):
                 if self.token_is("=") or self.is_current_token_an(LexerToken.IDENTIFIER) or \
                         self.is_current_token_an(LexerToken.STRING) or self.is_current_token_an(LexerToken.INTEGER) \
@@ -155,6 +179,7 @@ class SyntaxAnalyserRDP:
                             conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.\n")
+                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
         return conditional
 
@@ -168,6 +193,7 @@ class SyntaxAnalyserRDP:
             self.output.append("<Else> -> epsilon\n")
         if not self.token_is(";"):
             self.output.append("Warning: Missing ';' at end of line.\n")
+            self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
         return True
 
     def For_Loop(self):
@@ -185,6 +211,7 @@ class SyntaxAnalyserRDP:
             self.Statement()
         if not self.token_is(";"):
             self.output.append("Warning: Missing ';' at end of line.\n")
+            self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
 
         return for_loop
 
@@ -199,6 +226,7 @@ class SyntaxAnalyserRDP:
             self.Statement()
         if not self.token_is(";"):
             self.output.append("Warning: Missing ';' at end of line.\n")
+            self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
 
         return while_loop
 
@@ -223,6 +251,7 @@ class SyntaxAnalyserRDP:
                 if not self.Expression_Prime():
                     expression_prime = False
                     self.output.append("Error: Invalid Expression-Prime.\n")
+                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("<Expression-Prime> -> epsilon\n")
 
@@ -291,6 +320,7 @@ class SyntaxAnalyserRDP:
             self.is_current_token_an(LexerToken.STRING)
             if not (self.token_is('"') or self.token_is("'")):
                 self.output.append("Warning: Missing closing string's separator at end of expression.\n")
+                self.warnings.append(Warning(WarningTypes.MISSING, self.current_token_index))
             factor = True
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
@@ -299,12 +329,15 @@ class SyntaxAnalyserRDP:
                     factor = True
                 else:
                     self.output.append("Error: Missing closing ')' at end of expression.\n")
+                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                     factor = False
             else:
                 self.output.append("Error: Invalid expression.\n")
+                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         elif self.is_current_token_an(LexerToken.NOT_EXISTS):
             self.output.append(
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.\n")
+            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             factor = False
 
         return factor
