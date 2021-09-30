@@ -9,11 +9,10 @@ Lexeme: d  Token: IDENTIFIER
 <Factor> -> <Identifier>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
-Lexeme: <  Token: NOT_EXISTS
+Lexeme: <  Token: OPERATOR
+Lexeme: 0  Token: INTEGER
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: 0  Token: INTEGER
-<Factor> -> <Integer>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
 Lexeme: )  Token: SEPARATOR
@@ -29,7 +28,8 @@ Lexeme: a  Token: IDENTIFIER
 <Factor> -> <Identifier>
 <Term-Prime> -> epsilon
 <Expression-Prime> -> epsilon
-Lexeme: <  Token: NOT_EXISTS
+Lexeme: >  Token: OPERATOR
+Lexeme: =  Token: OPERATOR
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
 Lexeme: b  Token: IDENTIFIER
