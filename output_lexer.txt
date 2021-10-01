@@ -3,7 +3,9 @@ TOKENS       LEXEMES
 KEYWORD      int                     
 IDENTIFIER   f                       
 OPERATOR     =                       
-INTEGER      5                       
+IDENTIFIER   abs                     
+SEPARATOR    (                       
+SEPARATOR    )                       
 OPERATOR     /                       
 OPERATOR     -                       
 INTEGER      6                       

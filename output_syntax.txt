@@ -6,8 +6,10 @@ Lexeme: =  Token: OPERATOR
 <Assignment> -> <Identifier> = <Expression>;
 <Expression> -> <Term> <Expression-Prime>
 <Term> -> <Factor> <Term-Prime>
-Lexeme: 5  Token: INTEGER
-<Factor> -> <Integer>
+Lexeme: abs  Token: IDENTIFIER
+Lexeme: (  Token: SEPARATOR
+<Factor> -> <Identifier>(<Function-Parameters>)
+Lexeme: )  Token: SEPARATOR
 Lexeme: /  Token: OPERATOR
 <Term-Prime> -> / <Factor> <Term-Prime>
 Lexeme: -  Token: OPERATOR
