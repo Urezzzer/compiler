@@ -18,8 +18,7 @@
 <Expression-Prime> -> + <Term> <Expression-Prime> | - <Term> <Expression-Prime> | epsilon
 <Term> -> <Factor> <Term-Prime>
 <Term-Prime> -> * <Factor> <Term-Prime> | / <Factor> <Term-Prime> | epsilon
-<Factor> -> <Unsigned> | <Signed>
-<Unsigned> -> <Boolean> | '<String>' | "<String>" | (<Expression>) | <Identifier> | <Integer> | <Float> | <Identifier>(<Function-Parameters>)
+<Factor> -> <Boolean> | '<String>' | "<String>" | (<Expression>) | <Identifier> | <Integer> | <Float> | <Identifier>(<Function-Parameters>) | <Signed>
 <Signed> -> <Sign>(<Expression>) | <Sign><Identifier> | <Sign><Integer> | <Sign><Float> | <Sign><Identifier> | <Sign>(<Function-Parameters>)
 <Function-Parameters> -> <Expression> | <Expression>, <Function-Parameters> | epsilon
 <Initialization> -> <Data-Type> <Identifier> | <Data-Type> <Identifier>, <Initialization> | epsilon
