@@ -41,8 +41,8 @@ class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "/", "<", ">", "!"]
     VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", ".", ":"]
     VALID_STRING = ['"', "'" ]
-    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "const", "main", "char", "double",
-                      "string", "void", "return", "for"]
+    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "main", "char", "double", "string",
+                      "void", "return", "for"]
 
     DECIMAL = '.'
     COMMENT_START = ["/*", "//"]

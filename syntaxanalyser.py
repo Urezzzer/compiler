@@ -135,9 +135,9 @@ class SyntaxAnalyserRDP:
                 if self.token_is(")"):
                     if self.token_is("{"):
                         while not self.token_is("}"):
-                            self.Statement()
                             if len(self.errors) != 0:
                                 break
+                            self.Statement()
                         ifstate = self.Else()
                     else:
                         self.output.append("Error: Missing \"{\" keyword in If-Statement.  Row = {} , Position = {}\n".format(
@@ -197,9 +197,9 @@ class SyntaxAnalyserRDP:
             self.output.append("<Else> -> else {<Statement>}\n")
             if self.token_is("{"):
                 while not self.token_is("}"):
-                    self.Statement()
                     if len(self.errors) != 0:
                         break
+                    self.Statement()
             else:
                 self.output.append("Error: Missing \"{\" at end of function.  Row = {} , Position = {}\n".format(
                     self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))
@@ -224,9 +224,9 @@ class SyntaxAnalyserRDP:
                     if self.token_is(")"):
                         if self.token_is("{"):
                             while not self.token_is("}"):
-                                self.Statement()
                                 if len(self.errors) != 0:
                                     break
+                                self.Statement()
                             if not self.token_is(";"):
                                 self.output.append("Error: Missing ';' at end of line.  Row = {} , Position = {}\n".format(
                                 self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))
@@ -267,9 +267,9 @@ class SyntaxAnalyserRDP:
             if self.token_is(")"):
                 if self.token_is("{"):
                     while not self.token_is("}"):
-                        self.Statement()
                         if len(self.errors) != 0:
                             break
+                        self.Statement()
                     if not self.token_is(";"):
                         self.output.append("Error: Missing ';' at end of line.  Row = {} , Position = {}\n".format(
                             self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))

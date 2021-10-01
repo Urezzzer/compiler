@@ -1,22 +1,6 @@
 TOKENS       LEXEMES                 
 
-KEYWORD      int                     
 IDENTIFIER   foo                     
 OPERATOR     =                       
-INTEGER      3                       
-SEPARATOR    ;                       
-KEYWORD      int                     
-IDENTIFIER   bar                     
-OPERATOR     =                       
-INTEGER      3                       
-SEPARATOR    ;                       
-KEYWORD      if                      
-SEPARATOR    (                       
-IDENTIFIER   foo                     
-OPERATOR     =                       
-OPERATOR     =                       
-SEPARATOR    )                       
-SEPARATOR    {                       
-SEPARATOR    }                       
 SEPARATOR    ;                       
 END_OF_FILE  $                       

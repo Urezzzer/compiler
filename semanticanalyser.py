@@ -141,9 +141,9 @@ class SemanticAnalyser:
                 if self.token_is(")"):
                     if self.token_is("{"):
                         while not self.token_is("}"):
-                            self.Statement()
                             if len(self.errors) != 0:
                                 break
+                            self.Statement()
                         ifstate = self.Else()
 
         return ifstate
@@ -176,9 +176,9 @@ class SemanticAnalyser:
             self.output.append("<Else> -> else {<Statement>}\n")
             if self.token_is("{"):
                 while not self.token_is("}"):
-                    self.Statement()
                     if len(self.errors) != 0:
                         break
+                    self.Statement()
         else:
             self.output.append("<Else> -> epsilon\n")
         self.token_is(";")
@@ -197,9 +197,9 @@ class SemanticAnalyser:
                     self.token_is(")")
                     self.token_is("{")
                     while not self.token_is("}"):
-                        self.Statement()
                         if len(self.errors) != 0:
                             break
+                        self.Statement()
                     self.token_is(";")
         return for_loop
 
@@ -211,9 +211,9 @@ class SemanticAnalyser:
             self.token_is(")")
             self.token_is("{")
             while not self.token_is("}"):
-                self.Statement()
                 if len(self.errors) != 0:
                     break
+                self.Statement()
             self.token_is(";")
 
         return while_loop
