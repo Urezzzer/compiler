@@ -278,7 +278,7 @@ class SemanticAnalyser:
             if not self.Term(_id):
                 expression_prime = False
             else:
-                if not self.Expression_Prime():
+                if not self.Expression_Prime(_id):
                     expression_prime = False
         else:
             self.output.append("<Expression-Prime> -> epsilon\n")

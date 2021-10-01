@@ -1,17 +1,13 @@
 TOKENS       LEXEMES                 
 
-KEYWORD      int                     
-IDENTIFIER   num                     
+KEYWORD      float                   
+IDENTIFIER   t                       
 OPERATOR     =                       
+REAL         1.                      
+OPERATOR     +                       
+REAL         2.                      
+OPERATOR     +                       
+OPERATOR     -                       
 INTEGER      0                       
-SEPARATOR    ;                       
-KEYWORD      if                      
-SEPARATOR    (                       
-IDENTIFIER   num                     
-OPERATOR     =                       
-OPERATOR     =                       
-INTEGER      0                       
-SEPARATOR    )                       
-SEPARATOR    }                       
 SEPARATOR    ;                       
 END_OF_FILE  $                       
