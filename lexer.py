@@ -79,7 +79,7 @@ class Lexer(object):
             elif char == Constants.SLASH:
                 if self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
-                if self.current_state != LexerState.SLASH and self.current_state != LexerState.COMMENT:
+                elif self.current_state != LexerState.SLASH and self.current_state != LexerState.COMMENT:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.current_state = LexerState.SLASH
                 else:
@@ -87,7 +87,7 @@ class Lexer(object):
             elif char in Constants.VALID_STRING:
                 if self.current_state == LexerState.COMMENT:
                     self.append_to_buffer(char)
-                if self.current_state != LexerState.STRING:
+                elif self.current_state != LexerState.STRING:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.current_state = LexerState.STRING

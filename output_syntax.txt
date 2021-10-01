@@ -31,9 +31,5 @@ Lexeme: 5  Token: INTEGER
 <Factor> -> <Integer>
 Lexeme: /  Token: OPERATOR
 <Term-Prime> -> / <Factor> <Term-Prime>
-Lexeme: 6  Token: INTEGER
-<Factor> -> <Integer>
-<Term-Prime> -> epsilon
-<Expression-Prime> -> epsilon
-Lexeme: ;  Token: SEPARATOR
-Lexeme: $  Token: END_OF_FILE
+Error: Invalid expression.  Row = 2 , Position = 11
+Error: Missing ';' at end of line.  Row = 2 , Position = 11

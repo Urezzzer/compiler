@@ -1,3 +1,4 @@
 ERROR                INDEX_TOKEN             
 
-ErrorTypes.INVALID       11                      
+ErrorTypes.INVALID       14                      
+ErrorTypes.MISSING       14                      

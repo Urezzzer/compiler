@@ -14,6 +14,7 @@ IDENTIFIER   f
 OPERATOR     =                       
 INTEGER      5                       
 OPERATOR     /                       
+OPERATOR     -                       
 INTEGER      6                       
 SEPARATOR    ;                       
 END_OF_FILE  $                       
