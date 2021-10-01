@@ -25,9 +25,11 @@ class Parser:
                 self.lexer.write_to_file(output_file_for_lexer)
                 self.syntax_analyser.write_output_to_file(output_file_for_syntax)
                 self.semantic_analyser.parse(self.syntax_analyser.tokens, self.syntax_analyser.positions,
-                                             self.syntax_analyser.attributes, self.syntax_analyser.ids, self.syntax_analyser.errors)
+                                             self.syntax_analyser.errors)
                 self.semantic_analyser.write_output_to_file(output_file_for_semantic)
-                print(self.syntax_analyser.positions)
+
+                # НУЖНО НАСТРОИТЬ ВЫВОД ПОЗИЦИИ
+                #print(self.syntax_analyser.positions)
         else:
             print(f"File \"{input_file}\" does not exist in the current directory.")
 

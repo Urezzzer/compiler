@@ -82,7 +82,6 @@ class Lexer(object):
                 if self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
                 else:
-                    self.positions.append(self.current_pos.copy())
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.return_to_start()
             elif char in Constants.VALID_STRING:
@@ -95,7 +94,6 @@ class Lexer(object):
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.current_state = LexerState.START
             elif char == '\n':
-                self.positions.append(self.current_pos.copy())
                 self.current_pos['row'] = self.current_pos['row'] + 1
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.return_to_start()
@@ -143,6 +141,7 @@ class Lexer(object):
 
     def add_to_lexicon(self, token, lexeme):
         new_listing = Listing(token, lexeme)
+        self.positions.append(self.current_pos.copy())
         self.lexicon.append(new_listing)
 
     def write_to_file(self, filename):

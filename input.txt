@@ -1,6 +1,7 @@
-int d = 0;
+d = 0;
 int r = 1;
 int a = 1;
+int d = 0;
 int b = 1;
 int cos = 0;
 int pi = 1;

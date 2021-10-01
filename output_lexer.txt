@@ -1,6 +1,5 @@
 TOKENS       LEXEMES                 
 
-KEYWORD      int                     
 IDENTIFIER   d                       
 OPERATOR     =                       
 INTEGER      0                       
@@ -14,6 +13,11 @@ KEYWORD      int
 IDENTIFIER   a                       
 OPERATOR     =                       
 INTEGER      1                       
+SEPARATOR    ;                       
+KEYWORD      int                     
+IDENTIFIER   d                       
+OPERATOR     =                       
+INTEGER      0                       
 SEPARATOR    ;                       
 KEYWORD      int                     
 IDENTIFIER   b                       
