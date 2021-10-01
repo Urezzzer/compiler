@@ -13,6 +13,15 @@ class SemanticAnalyser:
         self.ids_to_tokens = {}
         self.current_token_index = 0
 
+        self.types_to_tokens = {
+            'int': LexerToken.INTEGER,
+            'string': LexerToken.STRING,
+            'bool': LexerToken.BOOLEAN,
+            'float': LexerToken.REAL,
+            'double': LexerToken.REAL,
+            'void': LexerToken.KEYWORD
+        }
+
     def backup(self, flag):
         if self.current_token_index > 0:
             self.current_token_index -= 1
@@ -79,13 +88,13 @@ class SemanticAnalyser:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
-    def Statement(self):
+    def Statement(self, _id = None):
         start = False
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             self.output.append("<Statement> -> <Assignment>\n")
             if self.backup('lexeme') in self.ids:
-                start = self.Assignment()
+                start = self.Assignment(self.backup('lexeme'))
             else:
                 self.output.append("Error: not initialized a variable.  Row = {} , Position = {}\n".format(
                     self.positions[self.current_token_index - 1]['row'],
@@ -105,7 +114,7 @@ class SemanticAnalyser:
             start = self.While_Loop()
         elif self.token_is("return"):
             self.output.append("<Statement> -> return <Expression>;\n")
-            start = self.Expression()
+            start = self.Expression(_id)
         else:
             self.output.append(
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = {} , Position = {}\n".format(
@@ -118,10 +127,12 @@ class SemanticAnalyser:
     def Declaration(self):
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
+        data_type = self.types_to_tokens[self.backup('lexeme')]
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             if self.backup('lexeme') not in self.ids:
+                self.ids_to_tokens[self.backup('lexeme')] = data_type
                 self.ids.add(self.backup('lexeme'))
-                if self.Assignment():
+                if self.Assignment(self.backup('lexeme')):
                     declaration = True
             else:
                 self.output.append("Error: Reinitializing a variable.  Row = {} , Position = {}\n".format(
@@ -131,11 +142,11 @@ class SemanticAnalyser:
 
         return declaration
 
-    def Assignment(self):
+    def Assignment(self, _id):
         assignment = False
         if self.token_is('='):
             self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
-            if self.Expression():
+            if self.Expression(_id):
                 assignment = True
         elif self.token_is('('):
             self.output.append("<Identifier> (<Initializing>) {<Statement>};\n")
@@ -145,7 +156,7 @@ class SemanticAnalyser:
                 while not self.token_is("}"):
                     if len(self.errors) != 0:
                         break
-                    self.Statement()
+                    self.Statement(_id)
 
         self.token_in(Constants.VALID_EOL_SYMBOLS)
         return assignment
@@ -250,21 +261,21 @@ class SemanticAnalyser:
 
         return while_loop
 
-    def Expression(self):
+    def Expression(self, _id = None):
         expression = False
         self.output.append("<Expression> -> <Term> <Expression-Prime>\n")
-        if self.Term():
-            if self.Expression_Prime():
+        if self.Term(_id):
+            if self.Expression_Prime(_id):
                 expression = True
 
         return expression
 
-    def Expression_Prime(self):
+    def Expression_Prime(self, _id = None):
         expression_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("+") or self.token_is("-"):
             self.output.append("<Expression-Prime> -> " + operator_token + " <Term> <Expression-Prime>\n")
-            if not self.Term():
+            if not self.Term(_id):
                 expression_prime = False
             else:
                 if not self.Expression_Prime():
@@ -274,25 +285,25 @@ class SemanticAnalyser:
 
         return expression_prime
 
-    def Term(self):
+    def Term(self, _id = None):
         term = False
 
         self.output.append("<Term> -> <Factor> <Term-Prime>\n")
-        if self.Factor():
-            if self.Term_Prime():
+        if self.Factor(_id):
+            if self.Term_Prime(_id):
                 term = True
 
         return term
 
-    def Term_Prime(self):
+    def Term_Prime(self, _id = None):
         term_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("*") or self.token_is("/"):
             self.output.append("<Term-Prime> -> " + operator_token + " <Factor> <Term-Prime>\n")
-            if not self.Factor():
+            if not self.Factor(_id):
                 term_prime = False
             else:
-                if not self.Term_Prime():
+                if not self.Term_Prime(_id):
                     term_prime = False
         else:
             self.output.append("<Term-Prime> -> epsilon\n")
@@ -308,13 +319,20 @@ class SemanticAnalyser:
             self.output.append("<Function-Parameters> ->  epsilon\n")
         return function_parameters
 
-    def Factor(self):
+    def Factor(self, _id = None):
         factor = True
         if self.token_in(Constants.SIGNED_OPERATORS):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.backup('lexeme') in self.ids:
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
+                        if _id != None:
+                            if self.ids_to_tokens[_id] != self.ids_to_tokens[self.backup('lexeme')]:
+                                self.output.append(
+                                    "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                        self.positions[self.current_token_index - 1]['row'],
+                                        self.positions[self.current_token_index - 1]['pos']))
+                                self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
