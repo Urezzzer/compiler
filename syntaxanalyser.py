@@ -9,14 +9,15 @@ class SyntaxAnalyserRDP:
         self.output = []
         self.errors = []
 
-    def parse(self, tokens, positions):
+    def parse(self, tokens, positions, errors):
         self.tokens = tokens
         self.positions = positions
+        self.errors = errors
 
         while not self.is_current_token_an([LexerToken.END_OF_FILE]):
-            self.Statement()
             if len(self.errors) != 0:
                 break
+            self.Statement()
 
     def write_output_to_file(self, filename):
         with open(filename, "w") as f:

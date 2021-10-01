@@ -1,16 +1,1 @@
-int r = 1;
-int a = 1;
-int d = 0;
-int b = 1;
-int cos = 0;
-int pi = 1;
-int sin = 1;
-int abs = 0;
-while (d < 0) {
-if (a >= b) {
-r = 9.0 - '5' * r;
-cos = pi - sin(pi/2);
-} else {
-int intvalue = abs();
-};
-};
+int edu@rd = 3;

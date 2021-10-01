@@ -39,9 +39,9 @@ class SemanticAnalyser:
         self.errors = errors
 
         while not self.is_current_token_an([LexerToken.END_OF_FILE]):
-            self.Statement()
             if len(self.errors) != 0:
                 break
+            self.Statement()
 
 
     def token_is(self, token_to_match):

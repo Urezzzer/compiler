@@ -8,6 +8,7 @@ class Lexer(object):
         self.buffer = []
         self.current_state = LexerState.START
         self.lexicon = []
+        self.errors = []
 
         self.positions = []
         self.current_pos = {
@@ -100,7 +101,8 @@ class Lexer(object):
             else:
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.add_to_lexicon(char, LexerToken.NOT_EXISTS)
-                self.current_state = LexerState.START
+                self.errors.append(Error(ErrorTypes.NOT_VALID, LexerToken.NOT_EXISTS))
+                self.return_to_start()
             self.current_pos['pos'] = self.current_pos['pos'] + 1
 
     def return_to_start(self):
