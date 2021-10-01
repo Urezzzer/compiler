@@ -45,7 +45,7 @@ class Lexer(object):
                 elif self.current_state == LexerState.INTEGER:
                     self.current_state = LexerState.REAL
                     self.append_to_buffer(char)
-                elif self.current_state == LexerState.ALPHABETIC:
+                elif self.current_state in [LexerState.ALPHABETIC, LexerState.REAL]:
                     self.append_to_buffer(char)
                     self.add_to_lexicon(''.join(self.buffer), LexerToken.INVALID)
                     self.return_to_start()

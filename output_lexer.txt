@@ -1,10 +1,4 @@
 TOKENS       LEXEMES                 
 
-KEYWORD      int                     
-IDENTIFIER   foo                     
-SEPARATOR    (                       
-SEPARATOR    )                       
-SEPARATOR    {                       
-SEPARATOR    }                       
-SEPARATOR    ;                       
+INVALID      3..                     
 END_OF_FILE  $                       

@@ -1,12 +1,3 @@
-Lexeme: int  Token: KEYWORD
-<Statement> -> <Declaration>
-<Declaration> -> <Data-Type> <Assignment>
-Lexeme: foo  Token: IDENTIFIER
-Lexeme: (  Token: SEPARATOR
-<Identifier> (<Initialization>) {<Statement>};
-<Initialization> -> epsilon
-Lexeme: )  Token: SEPARATOR
-Lexeme: {  Token: SEPARATOR
-Lexeme: }  Token: SEPARATOR
-Lexeme: ;  Token: SEPARATOR
+Lexeme: 3..  Token: INVALID
+Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = 0 , Position = 2
 Lexeme: $  Token: END_OF_FILE

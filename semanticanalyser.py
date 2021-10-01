@@ -105,6 +105,12 @@ class SemanticAnalyser:
         elif self.token_is("return"):
             self.output.append("<Statement> -> return <Expression>;\n")
             start = self.Expression()
+        elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
+            self.output.append(
+                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = {} , Position = {}\n".format(
+                    self.positions[self.current_token_index - 1]['row'],
+                    self.positions[self.current_token_index - 1]['pos']))
+            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
         return start
 
@@ -335,5 +341,12 @@ class SemanticAnalyser:
                 else:
                     factor = False
         elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
+            self.output.append(
+                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = {} , Position = {}\n".format(
+                    self.positions[self.current_token_index - 1]['row'],
+                    self.positions[self.current_token_index - 1]['pos']))
+            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+            factor = False
+        else:
             factor = False
         return factor
