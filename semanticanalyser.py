@@ -102,6 +102,9 @@ class SemanticAnalyser:
         elif self.token_is("while"):
             self.output.append("<Statement> -> <While-Loop>\n")
             start = self.While_Loop()
+        elif self.token_is("return"):
+            self.output.append("<Statement> -> return <Expression>;\n")
+            start = self.Expression()
 
         return start
 
@@ -123,15 +126,37 @@ class SemanticAnalyser:
 
     def Assignment(self):
         assignment = False
-        self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
-
         if self.token_is('='):
+            self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
             if self.Expression():
                 assignment = True
+        elif self.token_is('('):
+            self.output.append("<Identifier> (<Initializing>) {<Statement>};\n")
+            if self.Initialization():
+                self.token_is(')')
+                self.token_is('{')
+                while not self.token_is("}"):
+                    if len(self.errors) != 0:
+                        break
+                    self.Statement()
 
         self.token_in(Constants.VALID_EOL_SYMBOLS)
-
         return assignment
+
+    def Initialization(self):
+        initial = True
+        if self.token_in(Constants.VALID_DATA_TYPES):
+            if self.is_current_token_an(LexerToken.IDENTIFIER):
+                if self.token_is(','):
+                    self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
+                    self.Initialization()
+                else:
+                    self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
+            else:
+                initial = False
+        else:
+            self.output.append("<Initialization> -> epsilon\n")
+        return initial
 
     def If_Statement(self):
         ifstate = False

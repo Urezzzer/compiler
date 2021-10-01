@@ -1,9 +1,12 @@
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
 Lexeme: foo  Token: IDENTIFIER
-<Statement> -> <Assignment>
-<Assignment> -> <Identifier> = <Expression>;
-Lexeme: =  Token: OPERATOR
-<Expression> -> <Term> <Expression-Prime>
-<Term> -> <Factor> <Term-Prime>
-Error: Invalid expression.  Row = 0 , Position = 4
+Lexeme: (  Token: SEPARATOR
+<Identifier> (<Initialization>) {<Statement>};
+<Initialization> -> epsilon
+Lexeme: )  Token: SEPARATOR
+Lexeme: {  Token: SEPARATOR
+Lexeme: }  Token: SEPARATOR
 Lexeme: ;  Token: SEPARATOR
 Lexeme: $  Token: END_OF_FILE

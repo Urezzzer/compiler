@@ -1,3 +1,2 @@
 ERROR                INDEX_TOKEN             
 
-ErrorTypes.INVALID       2                       

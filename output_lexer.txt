@@ -1,6 +1,10 @@
 TOKENS       LEXEMES                 
 
+KEYWORD      int                     
 IDENTIFIER   foo                     
-OPERATOR     =                       
+SEPARATOR    (                       
+SEPARATOR    )                       
+SEPARATOR    {                       
+SEPARATOR    }                       
 SEPARATOR    ;                       
 END_OF_FILE  $                       

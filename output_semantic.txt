@@ -1,0 +1,12 @@
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: foo  Token: IDENTIFIER
+Lexeme: (  Token: SEPARATOR
+<Identifier> (<Initializing>) {<Statement>};
+<Initialization> -> epsilon
+Lexeme: )  Token: SEPARATOR
+Lexeme: {  Token: SEPARATOR
+Lexeme: }  Token: SEPARATOR
+Lexeme: ;  Token: SEPARATOR
+Lexeme: $  Token: END_OF_FILE
