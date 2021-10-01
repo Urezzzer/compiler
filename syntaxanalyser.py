@@ -412,4 +412,6 @@ class SyntaxAnalyserRDP:
                     self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))
             self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
             factor = False
+        else:
+            factor = False
         return factor
