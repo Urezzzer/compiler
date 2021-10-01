@@ -425,7 +425,37 @@ class SyntaxAnalyserRDP:
     def Factor(self):
         factor = True
         if self.token_in(Constants.SIGNED_OPERATORS):
-            ...
+            if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                if not self.token_is('('):
+                    self.output.append("<Factor> -> <Identifier>\n")
+                else:
+                    self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
+                    if not self.token_is(')'):
+                        self.Function_Parameters()
+                        self.token_is(')')
+                        self.output.append(
+                            "Error: Missing \")\" at end of function.  Row = {} , Position = {}\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                        factor = False
+            elif self.is_current_token_an([LexerToken.INTEGER]):
+                self.output.append("<Factor> -> <Integer>\n")
+                factor = True
+            elif self.is_current_token_an([LexerToken.REAL]):
+                self.output.append("<Factor> -> <Float>\n")
+                factor = True
+            elif self.token_is("("):
+                self.output.append("<Factor> -> (<Expression>)\n")
+                if self.Expression():
+                    if self.token_is(")"):
+                        factor = True
+                    else:
+                        factor = False
+            elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
+                factor = False
+            else:
+                factor = False
         else:
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if not self.token_is('('):
@@ -435,11 +465,6 @@ class SyntaxAnalyserRDP:
                     if not self.token_is(')'):
                         self.Function_Parameters()
                         if not self.token_is(')'):
-                            self.output.append(
-                                "Error: Missing \")\" at end of function.  Row = {} , Position = {}\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                             factor = False
             elif self.is_current_token_an([LexerToken.INTEGER]):
                 self.output.append("<Factor> -> <Integer>\n")
@@ -454,11 +479,6 @@ class SyntaxAnalyserRDP:
                 self.output.append("<Factor> -> <String>\n")
                 self.is_current_token_an([LexerToken.STRING])
                 if not (self.token_is('"') or self.token_is("'")):
-                    self.output.append(
-                        "Error: Missing closing string's separator at end of expression.  Row = {} , Position = {}\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                     factor = False
             elif self.token_is("("):
                 self.output.append("<Factor> -> (<Expression>)\n")
@@ -466,23 +486,9 @@ class SyntaxAnalyserRDP:
                     if self.token_is(")"):
                         factor = True
                     else:
-                        self.output.append("Error: Missing \")\" at end of expression.  Row = {} , Position = {}\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         factor = False
-                else:
-                    self.output.append("Error: Invalid expression.  Row = {} , Position = {}\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
             elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
-                self.output.append(
-                    "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = {} , Position = {}\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
                 factor = False
             else:
                 factor = False
-            return factor
+        return factor
