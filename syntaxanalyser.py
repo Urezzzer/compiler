@@ -368,7 +368,6 @@ class SyntaxAnalyserRDP:
                     self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         factor = False
-            factor = True
         elif self.is_current_token_an([LexerToken.INTEGER]):
             self.output.append("<Factor> -> <Integer>\n")
             factor = True
@@ -385,10 +384,10 @@ class SyntaxAnalyserRDP:
                 self.output.append("Error: Missing closing string's separator at end of expression.  Row = {} , Position = {}\n".format(
                     self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-            factor = True
+                factor = False
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
-            if (self.Expression()):
+            if self.Expression():
                 if self.token_is(")"):
                     factor = True
                 else:
@@ -411,4 +410,5 @@ class SyntaxAnalyserRDP:
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = {} , Position = {}\n".format(
                     self.positions[self.current_token_index - 1]['row'], self.positions[self.current_token_index - 1]['pos']))
             self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+            factor = False
         return factor

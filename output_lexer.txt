@@ -1,9 +1,5 @@
 TOKENS       LEXEMES                 
 
-IDENTIFIER   d                       
-OPERATOR     =                       
-INTEGER      0                       
-SEPARATOR    ;                       
 KEYWORD      int                     
 IDENTIFIER   r                       
 OPERATOR     =                       

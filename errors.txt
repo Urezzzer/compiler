@@ -1,3 +1,2 @@
 ERROR                INDEX_TOKEN             
 
-ErrorTypes.NOT_INITIALIZE 1                       

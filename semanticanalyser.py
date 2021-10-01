@@ -129,6 +129,8 @@ class SemanticAnalyser:
             if self.Expression():
                 assignment = True
 
+        self.token_in(Constants.VALID_EOL_SYMBOLS)
+
         return assignment
 
     def If_Statement(self):
@@ -177,9 +179,9 @@ class SemanticAnalyser:
                     self.Statement()
                     if len(self.errors) != 0:
                         break
-
         else:
             self.output.append("<Else> -> epsilon\n")
+        self.token_is(";")
 
         return True
 
@@ -198,7 +200,7 @@ class SemanticAnalyser:
                         self.Statement()
                         if len(self.errors) != 0:
                             break
-
+                    self.token_is(";")
         return for_loop
 
     def While_Loop(self):
@@ -212,6 +214,7 @@ class SemanticAnalyser:
                 self.Statement()
                 if len(self.errors) != 0:
                     break
+            self.token_is(";")
 
         return while_loop
 
@@ -285,7 +288,6 @@ class SemanticAnalyser:
                     self.Function_Parameters()
                     if not self.token_is(')'):
                         factor = False
-            factor = True
         elif self.is_current_token_an([LexerToken.INTEGER]):
             self.output.append("<Factor> -> <Integer>\n")
             factor = True
@@ -298,10 +300,11 @@ class SemanticAnalyser:
         elif self.token_is('"') or self.token_is("'"):
             self.output.append("<Factor> -> <String>\n")
             self.is_current_token_an([LexerToken.STRING])
-            factor = True
+            if not (self.token_is('"') or self.token_is("'")):
+                factor = False
         elif self.token_is("("):
             self.output.append("<Factor> -> (<Expression>)\n")
-            if (self.Expression()):
+            if self.Expression():
                 if self.token_is(")"):
                     factor = True
                 else:
