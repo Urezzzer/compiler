@@ -36,7 +36,8 @@ class ErrorTypes(Enum):
     NOT_VALID = 0,
     INVALID = 1,
     MISSING = 2,
-    NOT_INITIALIZE = 3
+    NOT_INITIALIZE = 3,
+    WRONG_TYPE = 4
 
 
 class Constants(object):

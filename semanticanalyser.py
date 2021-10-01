@@ -332,7 +332,8 @@ class SemanticAnalyser:
                                     "Error: Type of data.  Row = {} , Position = {}\n".format(
                                         self.positions[self.current_token_index - 1]['row'],
                                         self.positions[self.current_token_index - 1]['pos']))
-                                self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                                self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                                factor = False
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
@@ -346,13 +347,27 @@ class SemanticAnalyser:
                     self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
             elif self.is_current_token_an([LexerToken.INTEGER]):
                 self.output.append("<Factor> -> <Integer>\n")
-                factor = True
+                if _id != None:
+                    if self.ids_to_tokens[_id] != self.backup('token'):
+                        self.output.append(
+                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        factor = False
             elif self.is_current_token_an([LexerToken.REAL]):
                 self.output.append("<Factor> -> <Float>\n")
-                factor = True
+                if _id != None:
+                    if self.ids_to_tokens[_id] != self.backup('token'):
+                        self.output.append(
+                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        factor = False
             elif self.token_is("("):
                 self.output.append("<Factor> -> (<Expression>)\n")
-                if self.Expression():
+                if self.Expression(_id):
                     if self.token_is(")"):
                         factor = True
                     else:
@@ -366,6 +381,13 @@ class SemanticAnalyser:
                 if self.backup('lexeme') in self.ids:
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
+                        if _id != None:
+                            if self.ids_to_tokens[_id] != self.ids_to_tokens[self.backup('lexeme')]:
+                                self.output.append(
+                                    "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                        self.positions[self.current_token_index - 1]['row'],
+                                        self.positions[self.current_token_index - 1]['pos']))
+                                self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
@@ -379,21 +401,50 @@ class SemanticAnalyser:
                     self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
             elif self.is_current_token_an([LexerToken.INTEGER]):
                 self.output.append("<Factor> -> <Integer>\n")
-                factor = True
+                if _id != None:
+                    if self.ids_to_tokens[_id] != self.backup('token'):
+                        self.output.append(
+                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        factor = False
             elif self.is_current_token_an([LexerToken.REAL]):
                 self.output.append("<Factor> -> <Float>\n")
-                factor = True
+                if _id != None:
+                    if self.ids_to_tokens[_id] != self.backup('token'):
+                        self.output.append(
+                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        factor = False
             elif self.is_current_token_an([LexerToken.BOOLEAN]):
                 self.output.append("<Factor> -> <Boolean>\n")
-                factor = True
+                if _id != None:
+                    if self.ids_to_tokens[_id] != self.backup('token'):
+                        self.output.append(
+                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        factor = False
             elif self.token_is('"') or self.token_is("'"):
                 self.output.append("<Factor> -> <String>\n")
-                self.is_current_token_an([LexerToken.STRING])
+                if self.is_current_token_an([LexerToken.STRING]):
+                    if _id != None:
+                        if self.ids_to_tokens[_id] != self.backup('token'):
+                            self.output.append(
+                                "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                    self.positions[self.current_token_index - 1]['row'],
+                                    self.positions[self.current_token_index - 1]['pos']))
+                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            factor = False
                 if not (self.token_is('"') or self.token_is("'")):
                     factor = False
             elif self.token_is("("):
                 self.output.append("<Factor> -> (<Expression>)\n")
-                if self.Expression():
+                if self.Expression(_id):
                     if self.token_is(")"):
                         factor = True
                     else:
