@@ -1,3 +1,39 @@
-Lexeme: 3..  Token: INVALID
-Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = 0 , Position = 2
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: f  Token: IDENTIFIER
+Lexeme: =  Token: OPERATOR
+<Assignment> -> <Identifier> = <Expression>;
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 5  Token: INTEGER
+<Factor> -> <Integer>
+Lexeme: /  Token: OPERATOR
+<Term-Prime> -> / <Factor> <Term-Prime>
+Lexeme: 6  Token: INTEGER
+<Factor> -> <Integer>
+Lexeme: /  Token: OPERATOR
+<Term-Prime> -> / <Factor> <Term-Prime>
+Lexeme: 8  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
+Lexeme: int  Token: KEYWORD
+<Statement> -> <Declaration>
+<Declaration> -> <Data-Type> <Assignment>
+Lexeme: f  Token: IDENTIFIER
+Lexeme: =  Token: OPERATOR
+<Assignment> -> <Identifier> = <Expression>;
+<Expression> -> <Term> <Expression-Prime>
+<Term> -> <Factor> <Term-Prime>
+Lexeme: 5  Token: INTEGER
+<Factor> -> <Integer>
+Lexeme: /  Token: OPERATOR
+<Term-Prime> -> / <Factor> <Term-Prime>
+Lexeme: 6  Token: INTEGER
+<Factor> -> <Integer>
+<Term-Prime> -> epsilon
+<Expression-Prime> -> epsilon
+Lexeme: ;  Token: SEPARATOR
 Lexeme: $  Token: END_OF_FILE

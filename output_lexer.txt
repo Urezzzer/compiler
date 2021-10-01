@@ -1,4 +1,19 @@
 TOKENS       LEXEMES                 
 
-INVALID      3..                     
+KEYWORD      int                     
+IDENTIFIER   f                       
+OPERATOR     =                       
+INTEGER      5                       
+OPERATOR     /                       
+INTEGER      6                       
+OPERATOR     /                       
+INTEGER      8                       
+SEPARATOR    ;                       
+KEYWORD      int                     
+IDENTIFIER   f                       
+OPERATOR     =                       
+INTEGER      5                       
+OPERATOR     /                       
+INTEGER      6                       
+SEPARATOR    ;                       
 END_OF_FILE  $                       

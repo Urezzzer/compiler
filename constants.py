@@ -16,7 +16,8 @@ class LexerToken(Enum):
     END_OF_FILE = 8,
     BOOLEAN = 9,
     STRING = 10,
-    NOT_EXISTS = 11
+    NOT_EXISTS = 11,
+    COMMENT = 12
 
 
 # states
@@ -28,7 +29,8 @@ class LexerState(Enum):
     OPERATOR = 4,
     COMMENT = 5,
     INVALID = 6,
-    STRING = 7
+    STRING = 7,
+    SLASH = 8
 
 class ErrorTypes(Enum):
     NOT_VALID = 0,
@@ -38,15 +40,14 @@ class ErrorTypes(Enum):
 
 
 class Constants(object):
-    VALID_OPERATORS = ["+", "-", "=", "*", "/", "<", ">", "!"]
+    VALID_OPERATORS = ["+", "-", "=", "*", "<", ">", "!"]
     VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", ".", ":"]
     VALID_STRING = ['"', "'" ]
     VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "main", "char", "double", "string",
                       "void", "return", "for"]
 
     DECIMAL = '.'
-    COMMENT_START = ["/*", "//"]
-    COMMENT_END = "*/"
+    SLASH = "/"
     VALID_IDENTIFIER_SYMBOLS = ["$"]
     VALID_EOL_SYMBOLS = [';']
     TOKEN_END_OF_LINE = Listing("$", LexerToken.END_OF_FILE)

@@ -19,6 +19,10 @@ class Lexer(object):
     def parse(self, line):
         self.current_pos['pos'] = 0
         for char in line:
+            if char != Constants.SLASH and self.current_state == LexerState.SLASH:
+                self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                self.add_to_lexicon('/', LexerToken.OPERATOR)
+                self.return_to_start()
             if char.isalpha():
                 if self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
@@ -72,20 +76,17 @@ class Lexer(object):
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.return_to_start()
-            elif char == Constants.COMMENT_START:
+            elif char == Constants.SLASH:
                 if self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
-                elif self.current_state == LexerState.COMMENT:
-                    self.current_state = LexerState.START
+                if self.current_state != LexerState.SLASH and self.current_state != LexerState.COMMENT:
+                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.current_state = LexerState.SLASH
                 else:
                     self.current_state = LexerState.COMMENT
-            elif char == " ":
-                if self.current_state == LexerState.STRING:
-                    self.append_to_buffer(char)
-                else:
-                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
-                    self.return_to_start()
             elif char in Constants.VALID_STRING:
+                if self.current_state == LexerState.COMMENT:
+                    self.append_to_buffer(char)
                 if self.current_state != LexerState.STRING:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
@@ -94,21 +95,31 @@ class Lexer(object):
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.add_to_lexicon(char, LexerToken.OPERATOR)
                     self.current_state = LexerState.START
+            elif char == " ":
+                if self.current_state == LexerState.STRING:
+                    self.append_to_buffer(char)
+                else:
+                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.return_to_start()
             elif char == '\n':
                 self.current_pos['row'] = self.current_pos['row'] + 1
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
-                self.return_to_start()
+                self.current_state = LexerState.START
+                self.buffer.clear()
             else:
-                self.analyse_nonsymbol_lexeme(''.join(self.buffer))
-                self.add_to_lexicon(char, LexerToken.NOT_EXISTS)
-                self.errors.append(Error(ErrorTypes.NOT_VALID, LexerToken.NOT_EXISTS))
-                self.return_to_start()
+                if self.current_state != LexerState.STRING:
+                    self.analyse_nonsymbol_lexeme(''.join(self.buffer))
+                    self.add_to_lexicon(char, LexerToken.NOT_EXISTS)
+                    self.errors.append(Error(ErrorTypes.NOT_VALID, LexerToken.NOT_EXISTS))
+                    self.return_to_start()
+                else:
+                    self.append_to_buffer(char)
             self.current_pos['pos'] = self.current_pos['pos'] + 1
 
     def return_to_start(self):
         if self.current_state != LexerState.COMMENT:
-            self.buffer.clear()
             self.current_state = LexerState.START
+            self.buffer.clear()
 
     def is_keyword(self, lexeme):
         if lexeme in Constants.VALID_KEYWORDS:
