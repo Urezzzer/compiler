@@ -1,1 +1,2 @@
-int f = abs() / - 6;
+int num = 0;
+if (num == 0) };

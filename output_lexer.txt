@@ -1,13 +1,17 @@
 TOKENS       LEXEMES                 
 
 KEYWORD      int                     
-IDENTIFIER   f                       
+IDENTIFIER   num                     
 OPERATOR     =                       
-IDENTIFIER   abs                     
+INTEGER      0                       
+SEPARATOR    ;                       
+KEYWORD      if                      
 SEPARATOR    (                       
+IDENTIFIER   num                     
+OPERATOR     =                       
+OPERATOR     =                       
+INTEGER      0                       
 SEPARATOR    )                       
-OPERATOR     /                       
-OPERATOR     -                       
-INTEGER      6                       
+SEPARATOR    }                       
 SEPARATOR    ;                       
 END_OF_FILE  $                       

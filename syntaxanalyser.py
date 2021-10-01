@@ -190,13 +190,13 @@ class SyntaxAnalyserRDP:
                         ifstate = self.Else()
                     else:
                         self.output.append(
-                            "Error: Missing \"{\" keyword in If-Statement.  Row = {} , Position = {}\n".format(
+                            "Error: Missing " + "{" + " keyword in If-Statement.  Row = {} , Position = {}\n".format(
                                 self.positions[self.current_token_index - 1]['row'],
                                 self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append(
-                        "Error: Missing \")\" keyword in If-Statement.  Row = {} , Position = {}\n".format(
+                        "Error: Missing ) keyword in If-Statement.  Row = {} , Position = {}\n".format(
                             self.positions[self.current_token_index - 1]['row'],
                             self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))

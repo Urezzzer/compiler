@@ -10,6 +10,7 @@ class SemanticAnalyser:
         self.output = []
         self.errors = []
         self.ids = set()
+        self.ids_to_tokens = {}
         self.current_token_index = 0
 
     def backup(self, flag):
