@@ -41,6 +41,7 @@ class ErrorTypes(Enum):
 
 class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "<", ">", "!"]
+    SIGNED_OPERATORS = ["+", "-"]
     VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", ".", ":"]
     VALID_STRING = ['"', "'" ]
     VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "main", "char", "double", "string",

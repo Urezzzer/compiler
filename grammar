@@ -20,10 +20,11 @@
 <Term-Prime> -> * <Factor> <Term-Prime> | / <Factor> <Term-Prime> | epsilon
 <Factor> -> <Unsigned> | <Signed>
 <Unsigned> -> <Boolean> | '<String>' | "<String>" |
-<Signed> -> (<Expression>) | <Identifier> | <Integer> | <Float> | <Identifier>(<Function-Parameters>) | -(<Expression>) | -<Identifier> | -<Integer> | -<Float> | -<Identifier> | -(<Function-Parameters>)
+<Signed> -> (<Expression>) | <Identifier> | <Integer> | <Float> | <Identifier>(<Function-Parameters>) | <Sign>(<Expression>) | <Sign><Identifier> | <Sign><Integer> | <Sign><Float> | <Sign><Identifier> | <Sign>(<Function-Parameters>)
 <Function-Parameters> -> <Expression> | <Expression>, <Function-Parameters> | epsilon
 <Initialization> -> <Data-Type> <Identifier> | <Data-Type> <Identifier>, <Initialization> | epsilon
 
+<Sign> -> + | -
 <Separator> -> } | ) | ( | {
 
 <Identifier> -> (Aa-Zz)(Aa-Zz0-9$)*

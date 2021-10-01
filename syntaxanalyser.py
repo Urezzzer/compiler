@@ -424,7 +424,7 @@ class SyntaxAnalyserRDP:
 
     def Factor(self):
         factor = True
-
+        if self.token_in(Constants.SIGNED_OPERATORS):
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             if not self.token_is('('):
                 self.output.append("<Factor> -> <Identifier>\n")
