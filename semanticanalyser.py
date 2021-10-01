@@ -38,7 +38,7 @@ class SemanticAnalyser:
             for line in self.output:
                 f.write(line)
 
-        with open('C:\My Files\Python\Compilator\errors.txt', "w") as f:
+        with open('C:\errors.txt', "w") as f:
             f.write("{:<20} {:<24}\n\n".format("ERROR", "INDEX_TOKEN"))
             for error in self.errors:
                 f.write("{:<24} {:<24}\n".format(error.type, error.index))
@@ -96,7 +96,7 @@ class SemanticAnalyser:
             if self.backup('lexeme') in self.ids:
                 start = self.Assignment(self.backup('lexeme'))
             else:
-                self.output.append("Error: not initialized a variable.  Row = {} , Position = {}\n".format(
+                self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
                     self.positions[self.current_token_index - 1]['pos']))
                 self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
@@ -117,7 +117,7 @@ class SemanticAnalyser:
             start = self.Expression(_id)
         else:
             self.output.append(
-                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression.  Row = {} , Position = {}\n".format(
+                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression. [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
                     self.positions[self.current_token_index - 1]['pos']))
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
@@ -135,7 +135,7 @@ class SemanticAnalyser:
                 if self.Assignment(self.backup('lexeme')):
                     declaration = True
             else:
-                self.output.append("Error: Reinitializing a variable.  Row = {} , Position = {}\n".format(
+                self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
                     self.positions[self.current_token_index - 1]['pos']))
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
@@ -329,7 +329,7 @@ class SemanticAnalyser:
                         if _id != None:
                             if self.ids_to_tokens[_id] != self.ids_to_tokens[self.backup('lexeme')]:
                                 self.output.append(
-                                    "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                    "Error: Type of data.  [{},{}]\n".format(
                                         self.positions[self.current_token_index - 1]['row'],
                                         self.positions[self.current_token_index - 1]['pos']))
                                 self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -341,7 +341,7 @@ class SemanticAnalyser:
                             if not self.token_is(')'):
                                 factor = False
                 else:
-                    self.output.append("Error: not initialized a variable.  Row = {} , Position = {}\n".format(
+                    self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
                         self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
@@ -350,7 +350,7 @@ class SemanticAnalyser:
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
                         self.output.append(
-                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                            "Error: Type of data. [{},{}]\n".format(
                                 self.positions[self.current_token_index - 1]['row'],
                                 self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -360,7 +360,7 @@ class SemanticAnalyser:
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
                         self.output.append(
-                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                            "Error: Type of data. [{},{}]\n".format(
                                 self.positions[self.current_token_index - 1]['row'],
                                 self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -384,7 +384,7 @@ class SemanticAnalyser:
                         if _id != None:
                             if self.ids_to_tokens[_id] != self.ids_to_tokens[self.backup('lexeme')]:
                                 self.output.append(
-                                    "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                    "Error: Type of data. [{},{}]\n".format(
                                         self.positions[self.current_token_index - 1]['row'],
                                         self.positions[self.current_token_index - 1]['pos']))
                                 self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -395,7 +395,7 @@ class SemanticAnalyser:
                             if not self.token_is(')'):
                                 factor = False
                 else:
-                    self.output.append("Error: not initialized a variable.  Row = {} , Position = {}\n".format(
+                    self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
                         self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
@@ -404,7 +404,7 @@ class SemanticAnalyser:
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
                         self.output.append(
-                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                            "Error: Type of data. [{},{}]\n".format(
                                 self.positions[self.current_token_index - 1]['row'],
                                 self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -414,7 +414,7 @@ class SemanticAnalyser:
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
                         self.output.append(
-                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                            "Error: Type of data. [{},{}]\n".format(
                                 self.positions[self.current_token_index - 1]['row'],
                                 self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -424,7 +424,7 @@ class SemanticAnalyser:
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
                         self.output.append(
-                            "Error: Type of data.  Row = {} , Position = {}\n".format(
+                            "Error: Type of data. [{},{}]\n".format(
                                 self.positions[self.current_token_index - 1]['row'],
                                 self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
@@ -435,7 +435,7 @@ class SemanticAnalyser:
                     if _id != None:
                         if self.ids_to_tokens[_id] != self.backup('token'):
                             self.output.append(
-                                "Error: Type of data.  Row = {} , Position = {}\n".format(
+                                "Error: Type of data. [{},{}]\n".format(
                                     self.positions[self.current_token_index - 1]['row'],
                                     self.positions[self.current_token_index - 1]['pos']))
                             self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
