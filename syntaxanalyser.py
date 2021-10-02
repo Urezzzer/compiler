@@ -92,8 +92,8 @@ class SyntaxAnalyserRDP:
         else:
             self.output.append(
                 "Error: Unrecognized value. Factor must be an int, float, string, identifier or expression.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
 
@@ -107,8 +107,8 @@ class SyntaxAnalyserRDP:
                 declaration = True
         else:
             self.output.append("Error: Not a valid identifier.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
         return declaration
@@ -121,22 +121,22 @@ class SyntaxAnalyserRDP:
                 assignment = True
             else:
                 self.output.append("Error: Invalid expression.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         elif self.token_is('('):
             self.output.append("<Identifier> (<Initialization>) {<Statement>};\n")
             if self.Initialization():
                 if not self.token_is(')'):
                     self.output.append("Error: Expected Initialization variables. [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 if not self.token_is('{'):
                     self.output.append("Error: Missing " + "{" + " keyword in declaration of function. "
                                        "[{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 while not self.token_is("}"):
                     if len(self.errors) != 0:
@@ -145,24 +145,24 @@ class SyntaxAnalyserRDP:
                 if not self.token_is(Constants.VALID_EOL_SYMBOLS):
                     self.errors.clear()
                     self.output.append("Error: Missing " + "}" + " at the end of the function.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Expected identifier.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         else:
             self.output.append("Error: Missing '='.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         if not self.token_in(Constants.VALID_EOL_SYMBOLS):
             self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return assignment
@@ -197,24 +197,24 @@ class SyntaxAnalyserRDP:
                     else:
                         self.output.append(
                             "Error: Missing " + "{" + " at the end of the function.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
+                                self.positions[self.current_token_index]['row'],
+                                self.positions[self.current_token_index]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append(
                         "Error: Missing \")\" at the end of the condition.  [{},{}]\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
+                            self.positions[self.current_token_index]['row'],
+                            self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Invalid conditional expression.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("Error: Missing \"(\" at the beginning of the condition.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return ifstate
@@ -230,8 +230,8 @@ class SyntaxAnalyserRDP:
                         conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             if self.token_is("!"):
                 if self.token_is("="):
@@ -239,8 +239,8 @@ class SyntaxAnalyserRDP:
                         conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             if self.token_is("<") or self.token_is(">"):
                 if self.token_is("=") or self.is_current_token_an([LexerToken.IDENTIFIER, LexerToken.STRING,
@@ -250,8 +250,8 @@ class SyntaxAnalyserRDP:
                         conditional = True
                 else:
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
         return conditional
@@ -266,15 +266,15 @@ class SyntaxAnalyserRDP:
                     self.Statement()
             else:
                 self.output.append("Error: Missing " + "{" + " at the beginning of the function.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         else:
             self.output.append("<Else> -> epsilon\n")
         if not self.token_is(";"):
             self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         return True
 
@@ -296,35 +296,35 @@ class SyntaxAnalyserRDP:
                             if not self.token_is(";"):
                                 self.output.append(
                                     "Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                                        self.positions[self.current_token_index - 1]['row'],
-                                        self.positions[self.current_token_index - 1]['pos']))
+                                        self.positions[self.current_token_index]['row'],
+                                        self.positions[self.current_token_index]['pos']))
                                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         else:
                             self.output.append(
                                 "Error: Missing " + "{" + " at the beginning of the function. [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
+                                    self.positions[self.current_token_index]['row'],
+                                    self.positions[self.current_token_index]['pos']))
                             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                     else:
                         self.output.append(
                             "Error: Missing \")\" at the end of the condition.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
+                                self.positions[self.current_token_index]['row'],
+                                self.positions[self.current_token_index]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append("Error: Missing \";\" at the end of the line.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Invalid data type.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("Error: Missing \"(\" at the beginning of the condition.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return for_loop
@@ -342,23 +342,23 @@ class SyntaxAnalyserRDP:
                         self.Statement()
                     if not self.token_is(";"):
                         self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
+                            self.positions[self.current_token_index]['row'],
+                            self.positions[self.current_token_index]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append("Error: Missing " + "{" + " at the beginning of the function.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Missing \")\" at the end of the condition.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         else:
             self.output.append("Error: Missing \"(\" at the beginning of the condition.  [{},{}]\n".format(
-                self.positions[self.current_token_index - 1]['row'],
-                self.positions[self.current_token_index - 1]['pos']))
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return while_loop
@@ -380,14 +380,14 @@ class SyntaxAnalyserRDP:
             if not self.Term():
                 expression_prime = False
                 self.output.append("Error: Invalid term.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
             else:
                 if not self.Expression_Prime():
                     expression_prime = False
                     self.output.append("Error: Invalid Expression-Prime.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
+                        self.positions[self.current_token_index]['row'],
+                        self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         else:
             self.output.append("<Expression-Prime> -> epsilon\n")
@@ -441,8 +441,8 @@ class SyntaxAnalyserRDP:
                         self.token_is(')')
                         self.output.append(
                             "Error: Missing \")\" at the end of the function.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
+                                self.positions[self.current_token_index]['row'],
+                                self.positions[self.current_token_index]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         factor = False
             elif self.is_current_token_an([LexerToken.INTEGER]):

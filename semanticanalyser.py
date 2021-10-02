@@ -38,7 +38,7 @@ class SemanticAnalyser:
             for line in self.output:
                 f.write(line)
 
-        with open('C:\errors.txt', "w") as f:
+        with open('C:\My Files\Python\Compilator\errors.txt', "w") as f:
             f.write("{:<20} {:<24}\n\n".format("ERROR", "INDEX_TOKEN"))
             for error in self.errors:
                 f.write("{:<24} {:<24}\n".format(error.type, error.index))
@@ -118,8 +118,8 @@ class SemanticAnalyser:
         else:
             self.output.append(
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression. [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
+                    self.positions[self.current_token_index]['row'],
+                    self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
         return start
