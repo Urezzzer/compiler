@@ -193,12 +193,6 @@ class SyntaxAnalyserRDP:
                             if len(self.errors) != 0:
                                 break
                             self.Statement()
-                        if not self.token_is(Constants.VALID_EOL_SYMBOLS):
-                            self.errors.clear()
-                            self.output.append("Error: Missing " + "}" + " at the end of the line.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         ifstate = self.Else()
                     else:
                         self.output.append(
@@ -270,12 +264,6 @@ class SyntaxAnalyserRDP:
                     if len(self.errors) != 0:
                         break
                     self.Statement()
-                if not self.token_is(Constants.VALID_EOL_SYMBOLS):
-                    self.errors.clear()
-                    self.output.append("Error: Missing " + "}" + " at end of line.  [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Missing " + "{" + " at the beginning of the function.  [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
@@ -305,12 +293,6 @@ class SyntaxAnalyserRDP:
                                 if len(self.errors) != 0:
                                     break
                                 self.Statement()
-                            if not self.token_is(Constants.VALID_EOL_SYMBOLS):
-                                self.errors.clear()
-                                self.output.append("Error: Missing " + "}" + " at the end of the line.  [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                             if not self.token_is(";"):
                                 self.output.append(
                                     "Error: Missing ';' at the end of the line.  [{},{}]\n".format(
@@ -358,12 +340,6 @@ class SyntaxAnalyserRDP:
                         if len(self.errors) != 0:
                             break
                         self.Statement()
-                    if not self.token_is(Constants.VALID_EOL_SYMBOLS):
-                        self.errors.clear()
-                        self.output.append("Error: Missing " + "}" + " at the end of the line.  [{},{}]\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                     if not self.token_is(";"):
                         self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
                             self.positions[self.current_token_index - 1]['row'],

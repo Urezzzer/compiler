@@ -18,6 +18,7 @@ class Lexer(object):
 
     def parse(self, line):
         self.current_pos['pos'] = 0
+        self.current_pos['row'] = self.current_pos['row'] + 1
         for char in line:
             if char != Constants.SLASH and self.current_state == LexerState.SLASH:
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
@@ -102,7 +103,6 @@ class Lexer(object):
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                     self.return_to_start()
             elif char == '\n':
-                self.current_pos['row'] = self.current_pos['row'] + 1
                 self.analyse_nonsymbol_lexeme(''.join(self.buffer))
                 self.current_state = LexerState.START
                 self.buffer.clear()
