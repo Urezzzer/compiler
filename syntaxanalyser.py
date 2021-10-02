@@ -91,7 +91,7 @@ class SyntaxAnalyserRDP:
             start = self.Expression()
         else:
             self.output.append(
-                "Error: Unrecognized value. Factor must be an int, float, string, identifier or expression.  [{},{}]\n".format(
+                "Error: Expected a statement.  [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
@@ -142,7 +142,7 @@ class SyntaxAnalyserRDP:
                     if len(self.errors) != 0:
                         break
                     self.Statement()
-                if not self.token_is(Constants.VALID_EOL_SYMBOLS):
+                if not self.token_in(Constants.VALID_EOL_SYMBOLS):
                     self.errors.clear()
                     self.output.append("Error: Missing " + "}" + " at the end of the function.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
