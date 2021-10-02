@@ -11,7 +11,7 @@
 <Conditional> -> <Expression> <Conditional-Operator> <Expression>
 <Conditional-Operator> -> "==" | "<=" | ">=" | "!=" | > | <
 
-<For-loop> -> for (<Declaration>; <conditional>; <Declaration>) {<Statement>};
+<For-loop> -> for (<Declaration>; <conditional>; <Declaration>;) {<Statement>};
 <While-loop> -> while (<conditional>) {<Statement>};
 
 <Expression> -> <Term> <Expression-Prime>

@@ -142,7 +142,7 @@ class SemanticAnalyser:
 
         return declaration
 
-    def Assignment(self, _id):
+    def Assignment(self, _id=None):
         assignment = False
         if self.token_is('='):
             self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
@@ -230,20 +230,27 @@ class SemanticAnalyser:
 
     def For_Loop(self):
         for_loop = False
-        self.output.append("<For-loop> -> for (<Declaration><conditional>;<Declaration>) {<Statement>};\n")
+        self.output.append("<For-loop> -> for (<Declaration>;<conditional>;<Declaration>;) {<Statement>};\n")
         if self.token_is("("):
             if self.token_in(Constants.VALID_DATA_TYPES):
                 self.Declaration()
                 self.Conditional()
                 if self.token_is(";"):
-                    self.Declaration()
-                    self.token_is(")")
-                    self.token_is("{")
-                    while not self.token_is("}"):
-                        if len(self.errors) != 0:
-                            break
-                        self.Statement()
-                    self.token_is(";")
+                    if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                        if self.backup('lexeme') in self.ids:
+                            self.Assignment(self.backup('lexeme'))
+                            self.token_is(")")
+                            self.token_is("{")
+                            while not self.token_is("}"):
+                                if len(self.errors) != 0:
+                                    break
+                                self.Statement()
+                            self.token_is(";")
+                        else:
+                            self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
+                                self.positions[self.current_token_index - 1]['row'],
+                                self.positions[self.current_token_index - 1]['pos']))
+                            self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
         return for_loop
 
     def While_Loop(self):

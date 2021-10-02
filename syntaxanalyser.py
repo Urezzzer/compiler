@@ -286,7 +286,8 @@ class SyntaxAnalyserRDP:
                 self.Declaration()
                 self.Conditional()
                 if self.token_is(";"):
-                    self.Declaration()
+                    if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                        self.Assignment()
                     if self.token_is(")"):
                         if self.token_is("{"):
                             while not self.token_is("}"):
