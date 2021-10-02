@@ -92,8 +92,8 @@ class SyntaxAnalyserRDP:
         else:
             self.output.append(
                 "Error: Expected a statement.  [{},{}]\n".format(
-                    self.positions[self.current_token_index]['row'],
-                    self.positions[self.current_token_index]['pos']))
+                    self.positions[self.current_token_index - 1]['row'],
+                    self.positions[self.current_token_index - 1]['pos']))
             self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
 
 
@@ -145,8 +145,8 @@ class SyntaxAnalyserRDP:
                 if not self.token_in(Constants.VALID_EOL_SYMBOLS):
                     self.errors.clear()
                     self.output.append("Error: Missing " + "}" + " at the end of the function.  [{},{}]\n".format(
-                        self.positions[self.current_token_index]['row'],
-                        self.positions[self.current_token_index]['pos']))
+                        self.positions[self.current_token_index - 1]['row'],
+                        self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Expected identifier.  [{},{}]\n".format(
@@ -161,8 +161,8 @@ class SyntaxAnalyserRDP:
 
         if not self.token_in(Constants.VALID_EOL_SYMBOLS):
             self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                self.positions[self.current_token_index]['row'],
-                self.positions[self.current_token_index]['pos']))
+                self.positions[self.current_token_index - 1]['row'],
+                self.positions[self.current_token_index - 1]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
         return assignment
@@ -273,8 +273,8 @@ class SyntaxAnalyserRDP:
             self.output.append("<Else> -> epsilon\n")
         if not self.token_is(";"):
             self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                self.positions[self.current_token_index]['row'],
-                self.positions[self.current_token_index]['pos']))
+                self.positions[self.current_token_index - 1]['row'],
+                self.positions[self.current_token_index - 1]['pos']))
             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         return True
 
@@ -297,8 +297,8 @@ class SyntaxAnalyserRDP:
                             if not self.token_is(";"):
                                 self.output.append(
                                     "Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                                        self.positions[self.current_token_index]['row'],
-                                        self.positions[self.current_token_index]['pos']))
+                                        self.positions[self.current_token_index - 1]['row'],
+                                        self.positions[self.current_token_index - 1]['pos']))
                                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         else:
                             self.output.append(
@@ -314,8 +314,8 @@ class SyntaxAnalyserRDP:
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append("Error: Missing \";\" at the end of the line.  [{},{}]\n".format(
-                        self.positions[self.current_token_index]['row'],
-                        self.positions[self.current_token_index]['pos']))
+                        self.positions[self.current_token_index - 1]['row'],
+                        self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Invalid data type.  [{},{}]\n".format(
@@ -343,8 +343,8 @@ class SyntaxAnalyserRDP:
                         self.Statement()
                     if not self.token_is(";"):
                         self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                            self.positions[self.current_token_index]['row'],
-                            self.positions[self.current_token_index]['pos']))
+                            self.positions[self.current_token_index - 1]['row'],
+                            self.positions[self.current_token_index - 1]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append("Error: Missing " + "{" + " at the beginning of the function.  [{},{}]\n".format(
