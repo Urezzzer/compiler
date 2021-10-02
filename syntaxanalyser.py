@@ -196,7 +196,7 @@ class SyntaxAnalyserRDP:
                         ifstate = self.Else()
                     else:
                         self.output.append(
-                            "Error: Missing " + "{" + " at the end of the function.  [{},{}]\n".format(
+                            "Error: Missing " + "{" + " at the beginning of the function.  [{},{}]\n".format(
                                 self.positions[self.current_token_index]['row'],
                                 self.positions[self.current_token_index]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))

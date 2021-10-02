@@ -38,7 +38,7 @@ class SemanticAnalyser:
             for line in self.output:
                 f.write(line)
 
-        with open('C:\My Files\Python\Compilator\errors.txt', "w") as f:
+        with open('errors.txt', "w") as f:
             f.write("{:<20} {:<24}\n\n".format("ERROR", "INDEX_TOKEN"))
             for error in self.errors:
                 f.write("{:<24} {:<24}\n".format(error.type, error.index))
