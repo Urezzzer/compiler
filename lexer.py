@@ -71,6 +71,7 @@ class Lexer(object):
                     self.add_to_lexicon(char, LexerToken.SEPARATOR)
                     self.return_to_start()
             elif char in Constants.VALID_OPERATORS:
+                self.current_pos['pos'] = self.current_pos['pos'] + 1
                 if self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
                 elif self.current_state != LexerState.COMMENT:
