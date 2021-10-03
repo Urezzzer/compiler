@@ -1,4 +1,0 @@
-ERROR                INDEX_TOKEN             
-
-ErrorTypes.NOT_VALID     7                       
-ErrorTypes.MISSING       8                       
