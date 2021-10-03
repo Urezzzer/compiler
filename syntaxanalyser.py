@@ -17,7 +17,7 @@ class SyntaxAnalyserRDP:
         while not self.is_current_token_an([LexerToken.END_OF_FILE]):
             if len(self.errors) != 0:
                 break
-            self.Statement()
+            self.Start()
 
     def write_output_to_file(self, filename):
         with open(filename, "w") as f:
@@ -68,12 +68,38 @@ class SyntaxAnalyserRDP:
             self.advance_token()
             return value
 
+    def Start(self):
+        if self.token_in(Constants.VALID_DATA_TYPES):
+            self.output.append("<Start> -> <Data-Type> <Identifier> (<Initialization>) {<Statement>}\n")
+            if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
+                if self.token_is('('):
+                    if self.Initialization():
+                        if not self.token_is(')'):
+                            self.output.append("Error: Expected Initialization variables. [{},{}]\n".format(
+                                self.positions[self.current_token_index]['row'],
+                                self.positions[self.current_token_index]['pos']))
+                            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                        if not self.token_is('{'):
+                            self.output.append("Error: Missing " + "{" + " in declaration of function. "
+                                                                         "[{},{}]\n".format(
+                                self.positions[self.current_token_index]['row'],
+                                self.positions[self.current_token_index]['pos']))
+                            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                        while not self.token_is("}"):
+                            if len(self.errors) != 0:
+                                break
+                            self.Statement()
+        elif self.token_is(' '):
+            self.output.append("Empty file. [{},{}]\n".format(
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
+
     def Statement(self):
         start = False
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
-            self.output.append("<Statement> -> <Instruction>\n")
-            start = self.Instruction()
+            self.output.append("<Statement> -> <Assignment>\n")
+            start = self.Assignment()
         elif self.token_in(Constants.VALID_DATA_TYPES):
             self.output.append("<Statement> -> <Declaration>\n")
             start = self.Declaration()
@@ -109,7 +135,7 @@ class SyntaxAnalyserRDP:
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
-            if self.Assignment():
+            if self.Instruction():
                 declaration = True
         else:
             self.output.append("Error: Not a valid identifier.  [{},{}]\n".format(
@@ -121,43 +147,26 @@ class SyntaxAnalyserRDP:
 
     def Assignment(self):
         assignment = False
-        if self.token_is('='):
-            self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
-            if self.Expression():
-                assignment = True
-            else:
-                self.output.append("Error: Invalid expression.  [{},{}]\n".format(
-                    self.positions[self.current_token_index]['row'],
-                    self.positions[self.current_token_index]['pos']))
-                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
-            if not self.token_in(Constants.VALID_EOL_SYMBOLS):
-                self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                    self.positions[self.current_token_index]['row'],
-                    self.positions[self.current_token_index]['pos']))
-                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-        elif self.token_is('('):
-            self.output.append("<Identifier> (<Initialization>) {<Statement>};\n")
-            if self.Initialization():
+        if self.token_is('('):
+            self.output.append("<Assignment> -> <Identifier> (<Function-Parameters>);\n")
+            if self.Function_Parameters():
                 if not self.token_is(')'):
                     self.output.append("Error: Expected Initialization variables. [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-                if not self.token_is('{'):
-                    self.output.append("Error: Missing " + "{" + " in declaration of function. "
-                                       "[{},{}]\n".format(
+                if not self.token_in(Constants.VALID_EOL_SYMBOLS):
+                    self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-                while not self.token_is("}"):
-                    if len(self.errors) != 0:
-                        break
-                    self.Statement()
             else:
                 self.output.append("Error: Expected identifier.  [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+        elif self.Instruction():
+            assignment = True
         else:
             self.output.append("Error: Expected initialization of function or variable.  [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
@@ -197,19 +206,7 @@ class SyntaxAnalyserRDP:
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-        elif self.token_is('('):
-            self.output.append("<Instruction> -> <Identifier> (<Function-Parameters>);\n")
-            if self.Function_Parameters():
-                if not self.token_is(')'):
-                    self.output.append("Error: Expected ). [{},{}]\n".format(
-                        self.positions[self.current_token_index]['row'],
-                        self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-                if not self.token_in(Constants.VALID_EOL_SYMBOLS):
-                    self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                        self.positions[self.current_token_index]['row'],
-                        self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                instruction = False
         else:
             self.output.append("Error: Expected instruction.  [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
@@ -378,11 +375,6 @@ class SyntaxAnalyserRDP:
                         if len(self.errors) != 0:
                             break
                         self.Statement()
-                    if not self.token_is(";"):
-                        self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                            self.positions[self.current_token_index]['row'],
-                            self.positions[self.current_token_index]['pos']))
-                        self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                 else:
                     self.output.append("Error: Missing " + "{" + " at the beginning of the function.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],

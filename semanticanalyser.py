@@ -51,7 +51,7 @@ class SemanticAnalyser:
         while not self.is_current_token_an([LexerToken.END_OF_FILE]):
             if len(self.errors) != 0:
                 break
-            self.Statement()
+            self.Start()
 
 
     def token_is(self, token_to_match):
@@ -88,13 +88,34 @@ class SemanticAnalyser:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
+    def Start(self):
+        if self.token_in(Constants.VALID_DATA_TYPES):
+            self.output.append("<Start> -> <Data-Type> <Identifier> (<Initialization>) {<Statement>}\n")
+            data_type = self.types_to_tokens[self.backup('lexeme')]
+            if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
+                if self.backup('lexeme') not in self.ids:
+                    self.ids_to_tokens[self.backup('lexeme')] = data_type
+                    self.ids.add(self.backup('lexeme'))
+                if self.token_is('('):
+                    if self.Initialization():
+                        self.token_is(')')
+                        self.token_is('{')
+                        while not self.token_is("}"):
+                            if len(self.errors) != 0:
+                                break
+                            self.Statement()
+        elif self.token_is(' '):
+            self.output.append("Empty file. [{},{}]\n".format(
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
+
     def Statement(self, _id = None):
         start = False
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
-            self.output.append("<Statement> -> <Instruction>\n")
+            self.output.append("<Statement> -> <Assignment>\n")
             if self.backup('lexeme') in self.ids:
-                start = self.Instruction(self.backup('lexeme'))
+                start = self.Assignment(self.backup('lexeme'))
             else:
                 self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
@@ -133,7 +154,7 @@ class SemanticAnalyser:
             if self.backup('lexeme') not in self.ids:
                 self.ids_to_tokens[self.backup('lexeme')] = data_type
                 self.ids.add(self.backup('lexeme'))
-                if self.Assignment(self.backup('lexeme')):
+                if self.Instruction(self.backup('lexeme')):
                     declaration = True
             else:
                 self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
@@ -145,20 +166,14 @@ class SemanticAnalyser:
 
     def Assignment(self, _id=None):
         assignment = False
-        if self.token_is('='):
-            self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
-            if self.Expression(_id):
-                assignment = True
-            self.token_in(Constants.VALID_EOL_SYMBOLS)
-        elif self.token_is('('):
-            self.output.append("<Identifier> (<Initializing>) {<Statement>}\n")
-            if self.Initialization():
+        if self.token_is('('):
+            self.output.append("<Assignment> -> <Identifier> (<Function-Parameters>);\n")
+            if self.Function_Parameters():
                 self.token_is(')')
-                self.token_is('{')
-                while not self.token_is("}"):
-                    if len(self.errors) != 0:
-                        break
-                    self.Statement(_id)
+                self.token_in(Constants.VALID_EOL_SYMBOLS)
+        elif self.Instruction(_id):
+            assignment = True
+
         return assignment
 
     def Initialization(self):
@@ -179,15 +194,10 @@ class SemanticAnalyser:
     def Instruction(self, _id):
         instruction = False
         if self.token_is('='):
-            self.output.append("<Assignment> -> <Identifier> = <Expression>;\n")
+            self.output.append("<Instruction> -> <Identifier> = <Expression>;\n")
             if self.Expression():
                 instruction = True
             self.token_in(Constants.VALID_EOL_SYMBOLS)
-        elif self.token_is('('):
-            self.output.append("<Identifier> (<Function-Parameters>) {<Statement>};\n")
-            if self.Function_Parameters():
-                self.token_is(')')
-                self.token_in(Constants.VALID_EOL_SYMBOLS)
 
         return instruction
 
