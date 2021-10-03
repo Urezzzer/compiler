@@ -1,9 +1,11 @@
-<Statement> -> <If-statement> | <For-loop> | <While-loop> | <Declaration> | <Assignment> | return <Expression>
-<Declaration> -> <Data-Type> <Assignment>
+<Statement> -> <If-statement> | <For-loop> | <While-loop> | <Declaration> | <Instruction> | return <Expression>;
 
 <Data-Type> -> int | boolean | float |  string | char | double | void
 
-<Assignment> -> <Identifier> = <Expression>; | <Identifier> (<Initialization>) {<Statement>};
+<Declaration> -> <Data-Type> <Assignment>
+<Assignment> -> <Identifier> = <Expression>; | <Identifier> (<Initialization>) {<Statement>}
+
+<Instruction> - > <Identifier> = <Expression>; | <Identifier> (<Function-Parameters>);
 
 <If-statement> -> if (<conditional>) {<Statement>} <Else>
 <Else> -> else {<Statement>}; | ;
@@ -11,7 +13,7 @@
 <Conditional> -> <Expression> <Conditional-Operator> <Expression>
 <Conditional-Operator> -> "==" | "<=" | ">=" | "!=" | > | <
 
-<For-loop> -> for (<Declaration>; <conditional>; <Declaration>;) {<Statement>};
+<For-loop> -> for (<Declaration>; <conditional>; <Identifier> = <Expression>) {<Statement>}
 <While-loop> -> while (<conditional>) {<Statement>};
 
 <Expression> -> <Term> <Expression-Prime>
