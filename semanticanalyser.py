@@ -96,14 +96,19 @@ class SemanticAnalyser:
                 if self.backup('lexeme') not in self.ids:
                     self.ids_to_tokens[self.backup('lexeme')] = data_type
                     self.ids.add(self.backup('lexeme'))
-                if self.token_is('('):
-                    if self.Initialization():
-                        self.token_is(')')
-                        self.token_is('{')
-                        while not self.token_is("}"):
-                            if len(self.errors) != 0:
-                                break
-                            self.Statement()
+                    if self.token_is('('):
+                        if self.Initialization():
+                            self.token_is(')')
+                            self.token_is('{')
+                            while not self.token_is("}"):
+                                if len(self.errors) != 0:
+                                    break
+                                self.Statement()
+                else:
+                    self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
+                        self.positions[self.current_token_index - 1]['row'],
+                        self.positions[self.current_token_index - 1]['pos']))
+                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         elif self.token_is(' '):
             self.output.append("Empty file. [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
