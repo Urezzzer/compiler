@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  python:
+    image: python:3.8-slim
+    container_name: python
+    tty: true
+    volumes:
+      - ./:/compiler

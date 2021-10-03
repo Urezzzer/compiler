@@ -1,3 +1,0 @@
-ERROR                INDEX_TOKEN             
-
-ErrorTypes.WRONG_TYPE    9                       
