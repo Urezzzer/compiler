@@ -35,7 +35,7 @@ class Parser:
 
 def main():
     p = Parser()
-    p.parse('./input.txt', './output_lexer.txt',
+    p.parse('./input.cpp', './output_lexer.txt',
             './output_syntax.txt', './output_semantic.txt')
 
 
