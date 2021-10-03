@@ -13,11 +13,13 @@ class SyntaxAnalyserRDP:
         self.tokens = tokens
         self.positions = positions
         self.errors = errors
-
-        while not self.is_current_token_an([LexerToken.END_OF_FILE]):
-            if len(self.errors) != 0:
-                break
-            self.Start()
+        if len(tokens) > 1:
+            while not self.is_current_token_an([LexerToken.END_OF_FILE]):
+                if len(self.errors) != 0:
+                    break
+                self.Start()
+        else:
+            self.output.append("Empty file.\n")
 
     def write_output_to_file(self, filename):
         with open(filename, "w") as f:
@@ -89,10 +91,6 @@ class SyntaxAnalyserRDP:
                             if len(self.errors) != 0:
                                 break
                             self.Statement()
-        elif self.token_is(' '):
-            self.output.append("Empty file. [{},{}]\n".format(
-                self.positions[self.current_token_index]['row'],
-                self.positions[self.current_token_index]['pos']))
 
     def Statement(self):
         start = False

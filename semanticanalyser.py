@@ -48,10 +48,13 @@ class SemanticAnalyser:
         self.positions = positions
         self.errors = errors
 
-        while not self.is_current_token_an([LexerToken.END_OF_FILE]):
-            if len(self.errors) != 0:
-                break
-            self.Start()
+        if len(tokens) > 1:
+            while not self.is_current_token_an([LexerToken.END_OF_FILE]):
+                if len(self.errors) != 0:
+                    break
+                self.Start()
+        else:
+            self.output.append("Empty file.\n")
 
 
     def token_is(self, token_to_match):
@@ -109,10 +112,6 @@ class SemanticAnalyser:
                         self.positions[self.current_token_index - 1]['row'],
                         self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
-        elif self.token_is(' '):
-            self.output.append("Empty file. [{},{}]\n".format(
-                self.positions[self.current_token_index]['row'],
-                self.positions[self.current_token_index]['pos']))
 
     def Statement(self, _id = None):
         start = False
