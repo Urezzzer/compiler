@@ -274,16 +274,17 @@ class SyntaxAnalyserRDP:
                         self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
             if self.token_is("<") or self.token_is(">"):
-                if self.token_is("=") or self.is_current_token_an([LexerToken.IDENTIFIER, LexerToken.STRING,
-                                                                   LexerToken.INTEGER, LexerToken.REAL,
-                                                                   LexerToken.BOOLEAN]):
+                if self.token_is("="):
                     if self.Expression():
                         conditional = True
-                else:
+                elif self.token_in(Constants.VALID_KEYWORDS + Constants.VALID_OPERATORS):
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+                else:
+                    if self.Expression():
+                        conditional = True
 
         return conditional
 
@@ -302,11 +303,6 @@ class SyntaxAnalyserRDP:
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         else:
             self.output.append("<Else> -> epsilon\n")
-        if not self.token_is(";"):
-            self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
-                self.positions[self.current_token_index]['row'],
-                self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         return True
 
     def For_Loop(self):
@@ -315,40 +311,40 @@ class SyntaxAnalyserRDP:
         if self.token_is("("):
             if self.token_in(Constants.VALID_DATA_TYPES):
                 self.Declaration()
-                self.Conditional()
-                if self.token_is(";"):
-                    if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                        if self.token_is('='):
-                            if not self.Expression():
-                                self.output.append("Error: Invalid expression.  [{},{}]\n".format(
-                                    self.positions[self.current_token_index]['row'],
-                                    self.positions[self.current_token_index]['pos']))
-                                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
-                    else:
-                        ... # ОШИБКА
-                    if self.token_is(")"):
-                        if self.token_is("{"):
-                            while not self.token_is("}"):
-                                if len(self.errors) != 0:
-                                    break
-                                self.Statement()
+                if self.Conditional():
+                    if self.token_is(";"):
+                        if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                            if self.token_is('='):
+                                if not self.Expression():
+                                    self.output.append("Error: Invalid expression.  [{},{}]\n".format(
+                                        self.positions[self.current_token_index]['row'],
+                                        self.positions[self.current_token_index]['pos']))
+                                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                        else:
+                            ... # ОШИБКА
+                        if self.token_is(")"):
+                            if self.token_is("{"):
+                                while not self.token_is("}"):
+                                    if len(self.errors) != 0:
+                                        break
+                                    self.Statement()
+                            else:
+                                self.output.append(
+                                    "Error: Missing " + "{" + " at the beginning of the function. [{},{}]\n".format(
+                                        self.positions[self.current_token_index]['row'],
+                                        self.positions[self.current_token_index]['pos']))
+                                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                         else:
                             self.output.append(
-                                "Error: Missing " + "{" + " at the beginning of the function. [{},{}]\n".format(
+                                "Error: Missing \")\" at the end of the condition.  [{},{}]\n".format(
                                     self.positions[self.current_token_index]['row'],
                                     self.positions[self.current_token_index]['pos']))
                             self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
                     else:
-                        self.output.append(
-                            "Error: Missing \")\" at the end of the condition.  [{},{}]\n".format(
-                                self.positions[self.current_token_index]['row'],
-                                self.positions[self.current_token_index]['pos']))
+                        self.output.append("Error: Missing \";\" at the end of the line.  [{},{}]\n".format(
+                            self.positions[self.current_token_index]['row'],
+                            self.positions[self.current_token_index]['pos']))
                         self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
-                else:
-                    self.output.append("Error: Missing \";\" at the end of the line.  [{},{}]\n".format(
-                        self.positions[self.current_token_index]['row'],
-                        self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
             else:
                 self.output.append("Error: Invalid data type.  [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],

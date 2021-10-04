@@ -53,6 +53,10 @@ class SemanticAnalyser:
                 if len(self.errors) != 0:
                     break
                 self.Start()
+            if 'main' not in self.ids:
+                self.output.clear()
+                self.output.append("Error: Expected main function.\n")
+                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
         else:
             self.output.append("Empty file.\n")
 
@@ -199,9 +203,9 @@ class SemanticAnalyser:
         instruction = False
         if self.token_is('='):
             self.output.append("<Instruction> -> <Identifier> = <Expression>;\n")
-            if self.Expression():
+            if self.Expression(_id):
                 instruction = True
-            self.token_in(Constants.VALID_EOL_SYMBOLS)
+                self.token_in(Constants.VALID_EOL_SYMBOLS)
 
         return instruction
 
@@ -220,25 +224,26 @@ class SemanticAnalyser:
 
         return ifstate
 
-    def Conditional(self):
+    def Conditional(self, _id = None):
         conditional = False
         self.output.append("<Conditional> -> <Expression> <Conditional-Operator> <Expression>\n")
 
-        if self.Expression():
+        if self.Expression(_id):
             if self.token_is("="):
                 if self.token_is("="):
-                    if self.Expression():
+                    if self.Expression(_id):
                         conditional = True
             if self.token_is("!"):
                 if self.token_is("="):
-                    if self.Expression():
+                    if self.Expression(_id):
                         conditional = True
 
             if self.token_is("<") or self.token_is(">"):
-                if self.token_is("=") or self.is_current_token_an([LexerToken.IDENTIFIER, LexerToken.STRING,
-                                                                   LexerToken.INTEGER, LexerToken.REAL,
-                                                                   LexerToken.BOOLEAN]):
-                    if self.Expression():
+                if self.token_is("="):
+                    if self.Expression(_id):
+                        conditional = True
+                else:
+                    if self.Expression(_id):
                         conditional = True
 
         return conditional
@@ -259,31 +264,45 @@ class SemanticAnalyser:
 
     def For_Loop(self):
         for_loop = False
-        self.output.append("<For-loop> -> for (<Declaration>; <Conditional>; <Identifier> = <Expression>) {<Statement>}\n")
+        self.output.append("<For-loop> -> for (<Declaration>; <Conditional>; "
+                           "<Identifier> = <Expression>) {<Statement>}\n")
         if self.token_is("("):
             if self.token_in(Constants.VALID_DATA_TYPES):
-                self.Declaration()
-                self.Conditional()
-                if self.token_is(";"):
-                    if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                        if self.backup('lexeme') in self.ids:
-                            if self.token_is('='):
-                                if not self.Expression():
-                                    self.output.append("Error: Invalid expression.  [{},{}]\n".format(
-                                        self.positions[self.current_token_index]['row'],
-                                        self.positions[self.current_token_index]['pos']))
-                                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
-                            self.token_is(")")
-                            self.token_is("{")
-                            while not self.token_is("}"):
-                                if len(self.errors) != 0:
-                                    break
-                                self.Statement()
-                        else:
-                            self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
+                data_type = self.types_to_tokens[self.backup('lexeme')]
+                if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
+                    if self.backup('lexeme') not in self.ids:
+                        self.ids_to_tokens[self.backup('lexeme')] = data_type
+                        self.ids.add(self.backup('lexeme'))
+                        _id = self.backup('lexeme')
+                        self.Instruction(self.backup('lexeme'))
+                        if self.Conditional(_id):
+                            if self.token_is(";"):
+                                if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                                    if self.backup('lexeme') in self.ids:
+                                        if self.token_is('='):
+                                            if not self.Expression():
+                                                self.output.append("Error: Invalid expression.  [{},{}]\n".format(
+                                                    self.positions[self.current_token_index]['row'],
+                                                    self.positions[self.current_token_index]['pos']))
+                                                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                                        self.token_is(")")
+                                        self.token_is("{")
+                                        while not self.token_is("}"):
+                                            if len(self.errors) != 0:
+                                                break
+                                            self.Statement()
+                                        for_loop = True
+                                    else:
+                                        self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
+                                            self.positions[self.current_token_index - 1]['row'],
+                                            self.positions[self.current_token_index - 1]['pos']))
+                                        self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                    else:
+                        self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
+                            self.positions[self.current_token_index - 1]['row'],
+                            self.positions[self.current_token_index - 1]['pos']))
+                        self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
         return for_loop
 
     def While_Loop(self):
@@ -428,6 +447,7 @@ class SemanticAnalyser:
                                         self.positions[self.current_token_index - 1]['row'],
                                         self.positions[self.current_token_index - 1]['pos']))
                                 self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                                factor = False
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
