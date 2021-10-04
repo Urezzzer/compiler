@@ -19,6 +19,8 @@ class Parser:
                 for line in f:
                     if line != "\n":
                         self.lexer.parse(line)
+                    else:
+                        self.lexer.current_pos['row'] = self.lexer.current_pos['row'] + 1
 
                 self.lexer.lexicon.append(Constants.TOKEN_END_OF_LINE)
                 if len(self.lexer.positions) > 1:
@@ -32,6 +34,7 @@ class Parser:
 
         else:
             print(f"File \"{input_file}\" does not exist in the current directory.")
+
 
 def main():
     p = Parser()
