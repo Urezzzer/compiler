@@ -53,7 +53,7 @@ class SemanticAnalyser:
                 if len(self.errors) != 0:
                     break
                 self.Start()
-            if 'main' not in self.ids:
+            if 'main' not in self.ids and len(self.errors) == 0:
                 self.output.clear()
                 self.output.append("Error: Expected main function.\n")
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))

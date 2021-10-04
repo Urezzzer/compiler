@@ -91,6 +91,11 @@ class SyntaxAnalyserRDP:
                             if len(self.errors) != 0:
                                 break
                             self.Statement()
+        else:
+            self.output.append("Error: Expected a declaration of function. [{},{}]\n".format(
+                self.positions[self.current_token_index]['row'],
+                self.positions[self.current_token_index]['pos']))
+            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
 
     def Statement(self):
         start = False
