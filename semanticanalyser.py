@@ -15,7 +15,7 @@ class SemanticAnalyser:
 
         self.types_to_tokens = {
             'int': LexerToken.INTEGER,
-            'string': LexerToken.STRING,
+            'std::string': LexerToken.STRING,
             'bool': LexerToken.BOOLEAN,
             'float': LexerToken.REAL,
             'double': LexerToken.REAL,

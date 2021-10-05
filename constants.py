@@ -4,6 +4,7 @@ from collections import namedtuple
 Listing = namedtuple("Listing", "lexeme, token")
 Error = namedtuple("Error", ['type', 'index'])
 
+
 # token types
 class LexerToken(Enum):
     KEYWORD = 1,
@@ -32,6 +33,7 @@ class LexerState(Enum):
     STRING = 7,
     SLASH = 8
 
+
 class ErrorTypes(Enum):
     NOT_VALID = 0,
     INVALID = 1,
@@ -44,14 +46,14 @@ class Constants(object):
     VALID_OPERATORS = ["+", "-", "=", "*", "<", ">", "!"]
     SIGNED_OPERATORS = ["+", "-"]
     VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", ".", ":"]
-    VALID_STRING = ['"', "'" ]
-    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "main", "double", "string",
-                      "void", "return", "for"]
+    VALID_STRING = ['"', "'"]
+    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "main", "double", "std::string",
+                      "string", "void", "return", "for"]
 
     DECIMAL = '.'
     SLASH = "/"
     VALID_IDENTIFIER_SYMBOLS = "$"
     VALID_EOL_SYMBOLS = [';']
     TOKEN_END_OF_LINE = Listing("$", LexerToken.END_OF_FILE)
-    VALID_DATA_TYPES = ["int", "bool", "float", "string", "double", "void"]
+    VALID_DATA_TYPES = ["int", "bool", "float", "std::string", "double", "void"]
     VALID_BOOLEAN_VALUES = ["true", "false"]

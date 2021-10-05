@@ -64,7 +64,9 @@ class Lexer(object):
                     self.add_to_lexicon(''.join(self.buffer), LexerToken.INVALID)
                     self.return_to_start()
             elif char in Constants.VALID_SEPARATORS:
-                if self.current_state == LexerState.STRING:
+                if ''.join(self.buffer) == "std" or ''.join(self.buffer) == "std:":
+                    self.append_to_buffer(char)
+                elif self.current_state == LexerState.STRING:
                     self.append_to_buffer(char)
                 else:
                     self.analyse_nonsymbol_lexeme(''.join(self.buffer))
