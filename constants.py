@@ -47,7 +47,7 @@ class Constants(object):
     SIGNED_OPERATORS = ["+", "-"]
     VALID_SEPARATORS = ["(", ")", "[", "]", "{", "}", ",", ";", ".", ":"]
     VALID_STRING = ['"', "'"]
-    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "main", "double", "std::string",
+    VALID_KEYWORDS = ["int", "float", "bool", "if", "else", "then", "while", "double", "std::string",
                       "string", "void", "return", "for"]
 
     DECIMAL = '.'

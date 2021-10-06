@@ -73,7 +73,7 @@ class SyntaxAnalyserRDP:
     def Start(self):
         if self.token_in(Constants.VALID_DATA_TYPES):
             self.output.append("<Start> -> <Data-Type> <Identifier> (<Initialization>) {<Statement>}\n")
-            if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
+            if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.token_is('('):
                     if self.Initialization():
                         if not self.token_is(')'):
@@ -137,7 +137,7 @@ class SyntaxAnalyserRDP:
     def Declaration(self):
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
-        if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
+        if self.is_current_token_an([LexerToken.IDENTIFIER]):
             if self.Instruction():
                 declaration = True
         else:

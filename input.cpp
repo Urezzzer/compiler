@@ -1,5 +1,7 @@
+int foo() {
+    int a = 3;
+}
+
 int main() {
-    for (string i = '0'; i < 10; i = i + '1') {
-        int a = 0 + i;
-    }
+    int a = 3;
 }

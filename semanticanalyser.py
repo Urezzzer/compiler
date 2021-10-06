@@ -12,6 +12,7 @@ class SemanticAnalyser:
         self.ids = set()
         self.ids_to_tokens = {}
         self.current_token_index = 0
+        self.cur_depth = 0
 
         self.types_to_tokens = {
             'int': LexerToken.INTEGER,
@@ -53,7 +54,7 @@ class SemanticAnalyser:
                 if len(self.errors) != 0:
                     break
                 self.Start()
-            if 'main' not in self.ids and len(self.errors) == 0:
+            if ('main', 0) not in self.ids and len(self.errors) == 0:
                 self.output.clear()
                 self.output.append("Error: Expected main function.\n")
                 self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
@@ -95,22 +96,34 @@ class SemanticAnalyser:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
+    def del_ids(self, depth):
+        to_delete = []
+        for id_depth in self.ids:
+            if id_depth[1] == depth:
+                to_delete.append(id_depth)
+        for id_depth in to_delete:
+            self.ids.remove(id_depth)
+            self.ids_to_tokens.pop(id_depth)
+
     def Start(self):
         if self.token_in(Constants.VALID_DATA_TYPES):
             self.output.append("<Start> -> <Data-Type> <Identifier> (<Initialization>) {<Statement>}\n")
             data_type = self.types_to_tokens[self.backup('lexeme')]
-            if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
-                if self.backup('lexeme') not in self.ids:
-                    self.ids_to_tokens[self.backup('lexeme')] = data_type
-                    self.ids.add(self.backup('lexeme'))
+            if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                if (self.backup('lexeme'), self.cur_depth) not in self.ids:
+                    self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
+                    self.ids.add((self.backup('lexeme'), self.cur_depth))
                     if self.token_is('('):
                         if self.Initialization():
                             self.token_is(')')
                             self.token_is('{')
+                            self.cur_depth = self.cur_depth + 1
                             while not self.token_is("}"):
                                 if len(self.errors) != 0:
                                     break
                                 self.Statement()
+                            self.del_ids(self.cur_depth)
+                            self.cur_depth = self.cur_depth - 1
                 else:
                     self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
@@ -122,8 +135,8 @@ class SemanticAnalyser:
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             self.output.append("<Statement> -> <Assignment>\n")
-            if self.backup('lexeme') in self.ids:
-                start = self.Assignment(self.backup('lexeme'))
+            if (self.backup('lexeme'), self.cur_depth) in self.ids:
+                start = self.Assignment((self.backup('lexeme'), self.cur_depth))
             else:
                 self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
@@ -158,11 +171,11 @@ class SemanticAnalyser:
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         data_type = self.types_to_tokens[self.backup('lexeme')]
-        if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
-            if self.backup('lexeme') not in self.ids:
-                self.ids_to_tokens[self.backup('lexeme')] = data_type
-                self.ids.add(self.backup('lexeme'))
-                if self.Instruction(self.backup('lexeme')):
+        if self.is_current_token_an([LexerToken.IDENTIFIER]):
+            if (self.backup('lexeme'), self.cur_depth) not in self.ids:
+                self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
+                self.ids.add((self.backup('lexeme'), self.cur_depth))
+                if self.Instruction((self.backup('lexeme'), self.cur_depth)):
                     declaration = True
             else:
                 self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
@@ -216,10 +229,13 @@ class SemanticAnalyser:
             if self.Conditional():
                 if self.token_is(")"):
                     if self.token_is("{"):
+                        self.cur_depth = self.cur_depth + 1
                         while not self.token_is("}"):
                             if len(self.errors) != 0:
                                 break
                             self.Statement()
+                        self.del_ids(self.cur_depth)
+                        self.cur_depth = self.cur_depth - 1
                         ifstate = self.Else()
 
         return ifstate
@@ -252,10 +268,13 @@ class SemanticAnalyser:
         if self.token_is("else"):
             self.output.append("<Else> -> else {<Statement>}\n")
             if self.token_is("{"):
+                self.cur_depth = self.cur_depth + 1
                 while not self.token_is("}"):
                     if len(self.errors) != 0:
                         break
                     self.Statement()
+                self.del_ids(self.cur_depth)
+                self.cur_depth = self.cur_depth - 1
         else:
             self.output.append("<Else> -> epsilon\n")
         self.token_is(";")
@@ -270,16 +289,16 @@ class SemanticAnalyser:
             if self.token_in(Constants.VALID_DATA_TYPES):
                 self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
                 data_type = self.types_to_tokens[self.backup('lexeme')]
-                if self.is_current_token_an([LexerToken.IDENTIFIER]) or self.token_is('main'):
-                    if self.backup('lexeme') not in self.ids:
-                        self.ids_to_tokens[self.backup('lexeme')] = data_type
-                        self.ids.add(self.backup('lexeme'))
-                        _id = self.backup('lexeme')
-                        self.Instruction(self.backup('lexeme'))
+                if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                    if (self.backup('lexeme'), self.cur_depth) not in self.ids:
+                        self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
+                        self.ids.add((self.backup('lexeme'), self.cur_depth))
+                        _id = (self.backup('lexeme'), self.cur_depth)
+                        self.Instruction((self.backup('lexeme'), self.cur_depth))
                         if self.Conditional(_id):
                             if self.token_is(";"):
                                 if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                                    if self.backup('lexeme') in self.ids:
+                                    if (self.backup('lexeme'), self.cur_depth) in self.ids:
                                         if self.token_is('='):
                                             if not self.Expression():
                                                 self.output.append("Error: Invalid expression.  [{},{}]\n".format(
@@ -288,10 +307,13 @@ class SemanticAnalyser:
                                                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
                                         self.token_is(")")
                                         self.token_is("{")
+                                        self.cur_depth = self.cur_depth + 1
                                         while not self.token_is("}"):
                                             if len(self.errors) != 0:
                                                 break
                                             self.Statement()
+                                        self.del_ids(self.cur_depth)
+                                        self.cur_depth = self.cur_depth - 1
                                         for_loop = True
                                     else:
                                         self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
@@ -312,10 +334,13 @@ class SemanticAnalyser:
             self.Conditional()
             self.token_is(")")
             self.token_is("{")
+            self.cur_depth = self.cur_depth + 1
             while not self.token_is("}"):
                 if len(self.errors) != 0:
                     break
                 self.Statement()
+            self.del_ids(self.cur_depth)
+            self.cur_depth = self.cur_depth - 1
             self.token_is(";")
 
         return while_loop
@@ -382,11 +407,11 @@ class SemanticAnalyser:
         factor = True
         if self.token_in(Constants.SIGNED_OPERATORS):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                if self.backup('lexeme') in self.ids:
+                if (self.backup('lexeme'), self.cur_depth) in self.ids:
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
                         if _id != None:
-                            if self.ids_to_tokens[_id] != self.ids_to_tokens[self.backup('lexeme')]:
+                            if self.ids_to_tokens[_id] != self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)]:
                                 self.output.append(
                                     "Error: Type of data.  [{},{}]\n".format(
                                         self.positions[self.current_token_index - 1]['row'],
@@ -437,11 +462,11 @@ class SemanticAnalyser:
                 factor = False
         else:
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                if self.backup('lexeme') in self.ids:
+                if (self.backup('lexeme'), self.cur_depth) in self.ids:
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
                         if _id != None:
-                            if self.ids_to_tokens[_id] != self.ids_to_tokens[self.backup('lexeme')]:
+                            if self.ids_to_tokens[_id] != self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)]:
                                 self.output.append(
                                     "Error: Type of data. [{},{}]\n".format(
                                         self.positions[self.current_token_index - 1]['row'],
