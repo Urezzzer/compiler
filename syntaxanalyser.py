@@ -186,7 +186,7 @@ class SyntaxAnalyserRDP:
                     self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
                     self.Initialization()
                 else:
-                    self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
+                    self.output.append("<Data-Type> <Identifier>\n")
             else:
                 initial = False
         else:

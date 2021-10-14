@@ -105,12 +105,18 @@ class SemanticAnalyser:
             self.ids.remove(id_depth)
             self.ids_to_tokens.pop(id_depth)
 
+    def check_id_in_ids(self, id):
+        for depth in range(0, self.cur_depth + 1):
+            if (id, depth) in self.ids:
+                return True
+        return False
+
     def Start(self):
         if self.token_in(Constants.VALID_DATA_TYPES):
             self.output.append("<Start> -> <Data-Type> <Identifier> (<Initialization>) {<Statement>}\n")
             data_type = self.types_to_tokens[self.backup('lexeme')]
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                if (self.backup('lexeme'), self.cur_depth) not in self.ids:
+                if not self.check_id_in_ids(self.backup('lexeme')):
                     self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
                     self.ids.add((self.backup('lexeme'), self.cur_depth))
                     if self.token_is('('):
@@ -135,7 +141,7 @@ class SemanticAnalyser:
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             self.output.append("<Statement> -> <Assignment>\n")
-            if (self.backup('lexeme'), self.cur_depth) in self.ids:
+            if self.check_id_in_ids(self.backup('lexeme')):
                 start = self.Assignment((self.backup('lexeme'), self.cur_depth))
             else:
                 self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
@@ -172,7 +178,7 @@ class SemanticAnalyser:
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         data_type = self.types_to_tokens[self.backup('lexeme')]
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
-            if (self.backup('lexeme'), self.cur_depth) not in self.ids:
+            if not self.check_id_in_ids(self.backup('lexeme')):
                 self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
                 self.ids.add((self.backup('lexeme'), self.cur_depth))
                 if self.Instruction((self.backup('lexeme'), self.cur_depth)):
@@ -205,7 +211,7 @@ class SemanticAnalyser:
                     self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
                     self.Initialization()
                 else:
-                    self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
+                    self.output.append("<Data-Type> <Identifier>\n")
             else:
                 initial = False
         else:
@@ -290,7 +296,7 @@ class SemanticAnalyser:
                 self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
                 data_type = self.types_to_tokens[self.backup('lexeme')]
                 if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                    if (self.backup('lexeme'), self.cur_depth) not in self.ids:
+                    if not self.check_id_in_ids(self.backup('lexeme')):
                         self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
                         self.ids.add((self.backup('lexeme'), self.cur_depth))
                         _id = (self.backup('lexeme'), self.cur_depth)
@@ -298,7 +304,7 @@ class SemanticAnalyser:
                         if self.Conditional(_id):
                             if self.token_is(";"):
                                 if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                                    if (self.backup('lexeme'), self.cur_depth) in self.ids:
+                                    if self.check_id_in_ids(self.backup('lexeme')):
                                         if self.token_is('='):
                                             if not self.Expression():
                                                 self.output.append("Error: Invalid expression.  [{},{}]\n".format(
@@ -395,7 +401,8 @@ class SemanticAnalyser:
 
     def Function_Parameters(self):
         function_parameters = True
-        self.output.append("<Function-Parameters> -> <Expression> | <Expression>, <Function-Parameters>\n")
+        self.output.append("<Function-Parameters> -> <Expression> | <Function-Parameters> -> <Expression>, "
+                           "<Function-Parameters>\n")
         if self.Expression():
             if self.token_is(","):
                 self.Function_Parameters()
@@ -407,7 +414,7 @@ class SemanticAnalyser:
         factor = True
         if self.token_in(Constants.SIGNED_OPERATORS):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                if (self.backup('lexeme'), self.cur_depth) in self.ids:
+                if self.check_id_in_ids(self.backup('lexeme')):
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
                         if _id != None:
@@ -462,7 +469,7 @@ class SemanticAnalyser:
                 factor = False
         else:
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
-                if (self.backup('lexeme'), self.cur_depth) in self.ids:
+                if self.check_id_in_ids(self.backup('lexeme')):
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
                         if _id != None:
