@@ -487,7 +487,7 @@ class SyntaxAnalyserRDP:
                         factor = True
                     else:
                         factor = False
-            elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
+            elif self.is_current_token_an([LexerToken.NOT_EXISTS, LexerToken.INVALID, LexerToken.STRING]):
                 factor = False
             else:
                 factor = False

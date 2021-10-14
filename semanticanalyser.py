@@ -13,6 +13,7 @@ class SemanticAnalyser:
         self.ids_to_tokens = {}
         self.current_token_index = 0
         self.cur_depth = 0
+        self.cur_func = ()
 
         self.types_to_tokens = {
             'int': LexerToken.INTEGER,
@@ -23,12 +24,13 @@ class SemanticAnalyser:
             'void': LexerToken.KEYWORD
         }
 
-    def backup(self, flag):
+
+    def backup(self, type):
         if self.current_token_index > 0:
             self.current_token_index -= 1
-            if flag == 'lexeme':
+            if type == 'lexeme':
                 value = self.tokens[self.current_token_index].lexeme
-            if flag == 'token':
+            if type == 'token':
                 value = self.tokens[self.current_token_index].token
             self.advance_token()
             return value
@@ -119,6 +121,7 @@ class SemanticAnalyser:
                 if not self.check_id_in_ids(self.backup('lexeme')):
                     self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
                     self.ids.add((self.backup('lexeme'), self.cur_depth))
+                    self.cur_func = (self.backup('lexeme'), self.cur_depth)
                     if self.token_is('('):
                         if self.Initialization():
                             self.token_is(')')
@@ -162,7 +165,7 @@ class SemanticAnalyser:
             start = self.While_Loop()
         elif self.token_is("return"):
             self.output.append("<Statement> -> return <Expression>;\n")
-            start = self.Expression(_id)
+            start = self.Expression(self.cur_func)
             self.token_in(Constants.VALID_EOL_SYMBOLS)
         else:
             self.output.append(
@@ -412,6 +415,7 @@ class SemanticAnalyser:
 
     def Factor(self, _id = None):
         factor = True
+        operator = self.backup('lexeme')
         if self.token_in(Constants.SIGNED_OPERATORS):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.check_id_in_ids(self.backup('lexeme')):
@@ -463,7 +467,7 @@ class SemanticAnalyser:
                         factor = True
                     else:
                         factor = False
-            elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
+            elif self.is_current_token_an([LexerToken.NOT_EXISTS, LexerToken.INVALID, LexerToken.STRING]):
                 factor = False
             else:
                 factor = False
@@ -523,7 +527,13 @@ class SemanticAnalyser:
                         factor = False
             elif self.token_is('"') or self.token_is("'"):
                 self.output.append("<Factor> -> <String>\n")
-                if self.is_current_token_an([LexerToken.STRING]):
+                if operator != '=':
+                    self.output.append(
+                        "Error: string type does not support operators +, -, /, * . [{},{}]\n".format(
+                            self.positions[self.current_token_index - 1]['row'],
+                            self.positions[self.current_token_index - 1]['pos']))
+                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+                elif self.is_current_token_an([LexerToken.STRING]):
                     if _id != None:
                         if self.ids_to_tokens[_id] != self.backup('token'):
                             self.output.append(
@@ -541,7 +551,7 @@ class SemanticAnalyser:
                         factor = True
                     else:
                         factor = False
-            elif self.is_current_token_an([LexerToken.NOT_EXISTS]) or self.is_current_token_an([LexerToken.INVALID]):
+            elif self.is_current_token_an([LexerToken.NOT_EXISTS, LexerToken.INVALID]):
                 factor = False
             else:
                 factor = False
