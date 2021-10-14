@@ -531,7 +531,7 @@ class SemanticAnalyser:
                     self.output.append(
                         "Error: string type does not support operators +, -, /, * . [{},{}]\n".format(
                             self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
+                         self.positions[self.current_token_index - 1]['pos']))
                     self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
                 elif self.is_current_token_an([LexerToken.STRING]):
                     if _id != None:

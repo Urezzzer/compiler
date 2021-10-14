@@ -29,7 +29,7 @@ class SyntaxAnalyserRDP:
     def token_is(self, token_to_match):
         if self.tokens[self.current_token_index].lexeme == token_to_match:
             self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
-                               "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
+                            "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
             self.advance_token()
             return True
         else:
