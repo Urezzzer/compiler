@@ -110,7 +110,7 @@ class SemanticAnalyser:
     def check_id_in_ids(self, id):
         for depth in range(0, self.cur_depth + 1):
             if (id, depth) in self.ids:
-                return True
+                return (id, depth)
         return False
 
     def Start(self):
@@ -123,10 +123,10 @@ class SemanticAnalyser:
                     self.ids.add((self.backup('lexeme'), self.cur_depth))
                     self.cur_func = (self.backup('lexeme'), self.cur_depth)
                     if self.token_is('('):
+                        self.cur_depth = self.cur_depth + 1
                         if self.Initialization():
                             self.token_is(')')
                             self.token_is('{')
-                            self.cur_depth = self.cur_depth + 1
                             while not self.token_is("}"):
                                 if len(self.errors) != 0:
                                     break
@@ -145,7 +145,7 @@ class SemanticAnalyser:
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             self.output.append("<Statement> -> <Assignment>\n")
             if self.check_id_in_ids(self.backup('lexeme')):
-                start = self.Assignment((self.backup('lexeme'), self.cur_depth))
+                start = self.Assignment(self.check_id_in_ids(self.backup('lexeme')))
             else:
                 self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
@@ -209,7 +209,16 @@ class SemanticAnalyser:
     def Initialization(self):
         initial = True
         if self.token_in(Constants.VALID_DATA_TYPES):
-            if self.is_current_token_an(LexerToken.IDENTIFIER):
+            data_type = self.types_to_tokens[self.backup('lexeme')]
+            if self.is_current_token_an([LexerToken.IDENTIFIER]):
+                if not self.check_id_in_ids(self.backup('lexeme')):
+                    self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
+                    self.ids.add((self.backup('lexeme'), self.cur_depth))
+                else:
+                    self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
+                        self.positions[self.current_token_index - 1]['row'],
+                        self.positions[self.current_token_index - 1]['pos']))
+                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
                 if self.token_is(','):
                     self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
                     self.Initialization()
@@ -295,6 +304,7 @@ class SemanticAnalyser:
         self.output.append("<For-loop> -> for (<Declaration>; <Conditional>; "
                            "<Identifier> = <Expression>) {<Statement>}\n")
         if self.token_is("("):
+            self.cur_depth = self.cur_depth + 1
             if self.token_in(Constants.VALID_DATA_TYPES):
                 self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
                 data_type = self.types_to_tokens[self.backup('lexeme')]
@@ -316,7 +326,6 @@ class SemanticAnalyser:
                                                 self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
                                         self.token_is(")")
                                         self.token_is("{")
-                                        self.cur_depth = self.cur_depth + 1
                                         while not self.token_is("}"):
                                             if len(self.errors) != 0:
                                                 break
@@ -474,16 +483,16 @@ class SemanticAnalyser:
         else:
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.check_id_in_ids(self.backup('lexeme')):
+                    if _id != None:
+                        if self.ids_to_tokens[_id] != self.ids_to_tokens[self.check_id_in_ids(self.backup('lexeme'))]:
+                            self.output.append(
+                                "Error: Type of data. [{},{}]\n".format(
+                                    self.positions[self.current_token_index - 1]['row'],
+                                    self.positions[self.current_token_index - 1]['pos']))
+                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            factor = False
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
-                        if _id != None:
-                            if self.ids_to_tokens[_id] != self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)]:
-                                self.output.append(
-                                    "Error: Type of data. [{},{}]\n".format(
-                                        self.positions[self.current_token_index - 1]['row'],
-                                        self.positions[self.current_token_index - 1]['pos']))
-                                self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
-                                factor = False
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
@@ -527,7 +536,7 @@ class SemanticAnalyser:
                         factor = False
             elif self.token_is('"') or self.token_is("'"):
                 self.output.append("<Factor> -> <String>\n")
-                if operator != '=':
+                if operator != '=' and operator != 'return':
                     self.output.append(
                         "Error: string type does not support operators +, -, /, * . [{},{}]\n".format(
                             self.positions[self.current_token_index - 1]['row'],

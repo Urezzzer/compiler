@@ -181,7 +181,7 @@ class SyntaxAnalyserRDP:
     def Initialization(self):
         initial = True
         if self.token_in(Constants.VALID_DATA_TYPES):
-            if self.is_current_token_an(LexerToken.IDENTIFIER):
+            if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.token_is(','):
                     self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
                     self.Initialization()
