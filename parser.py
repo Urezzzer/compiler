@@ -38,8 +38,8 @@ class Parser:
 
 def main():
     p = Parser()
-    p.parse('./input.cpp', './output_lexer.txt',
-            './output_syntax.txt', './output_semantic.txt')
+    p.parse('C:\My Files\Python\Compilator\input.cpp', 'C:\My Files\Python\Compilator\output_lexer.txt',
+            'C:\My Files\Python\Compilator\output_syntax.txt', 'C:\My Files\Python\Compilator\output_semantic.txt')
 
 
 if __name__ == "__main__":

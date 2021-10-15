@@ -14,6 +14,7 @@ class SemanticAnalyser:
         self.current_token_index = 0
         self.cur_depth = 0
         self.cur_func = ()
+        self.func_to_params = {}
 
         self.types_to_tokens = {
             'int': LexerToken.INTEGER,
@@ -208,12 +209,14 @@ class SemanticAnalyser:
 
     def Initialization(self):
         initial = True
+        self.func_to_params[self.cur_func] = 0
         if self.token_in(Constants.VALID_DATA_TYPES):
             data_type = self.types_to_tokens[self.backup('lexeme')]
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if not self.check_id_in_ids(self.backup('lexeme')):
                     self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)] = data_type
                     self.ids.add((self.backup('lexeme'), self.cur_depth))
+                    self.func_to_params[self.cur_func] += 1
                 else:
                     self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
@@ -411,13 +414,21 @@ class SemanticAnalyser:
             self.output.append("<Term-Prime> -> epsilon\n")
         return term_prime
 
-    def Function_Parameters(self):
+    def Function_Parameters(self, count_params=0):
         function_parameters = True
         self.output.append("<Function-Parameters> -> <Expression> | <Function-Parameters> -> <Expression>, "
                            "<Function-Parameters>\n")
         if self.Expression():
+            count_params -= 1
+            if count_params == -1:
+                self.output.append(
+                    "Error: Wrong count of arguments. [{},{}]\n".format(
+                        self.positions[self.current_token_index - 1]['row'],
+                        self.positions[self.current_token_index - 1]['pos']))
+                self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                function_parameters = False
             if self.token_is(","):
-                self.Function_Parameters()
+                function_parameters = self.Function_Parameters(count_params)
         else:
             self.output.append("<Function-Parameters> ->  epsilon\n")
         return function_parameters
@@ -428,10 +439,11 @@ class SemanticAnalyser:
         if self.token_in(Constants.SIGNED_OPERATORS):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.check_id_in_ids(self.backup('lexeme')):
+                    identifier = self.check_id_in_ids(self.backup('lexeme'))
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
                         if _id != None:
-                            if self.ids_to_tokens[_id] != self.ids_to_tokens[(self.backup('lexeme'), self.cur_depth)]:
+                            if self.ids_to_tokens[_id] != self.ids_to_tokens[self.check_id_in_ids(self.backup('lexeme'))]:
                                 self.output.append(
                                     "Error: Type of data.  [{},{}]\n".format(
                                         self.positions[self.current_token_index - 1]['row'],
@@ -441,9 +453,16 @@ class SemanticAnalyser:
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
-                            self.Function_Parameters()
+                            factor = self.Function_Parameters(self.func_to_params[self.check_id_in_ids(identifier)])
                             if not self.token_is(')'):
                                 factor = False
+                        elif self.func_to_params[self.check_id_in_ids(identifier)] != 0:
+                            self.output.append(
+                                "Error: Wrong count of arguments. [{},{}]\n".format(
+                                    self.positions[self.current_token_index - 1]['row'],
+                                    self.positions[self.current_token_index - 1]['pos']))
+                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            factor = False
                 else:
                     self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
@@ -483,22 +502,30 @@ class SemanticAnalyser:
         else:
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.check_id_in_ids(self.backup('lexeme')):
-                    if _id != None:
-                        if self.ids_to_tokens[_id] != self.ids_to_tokens[self.check_id_in_ids(self.backup('lexeme'))]:
+                    identifier = self.backup('lexeme')
+                    if not self.token_is('('):
+                        self.output.append("<Factor> -> <Identifier>\n")
+                        if _id != None:
+                            if self.ids_to_tokens[_id] != self.ids_to_tokens[self.check_id_in_ids(self.backup('lexeme'))]:
+                                self.output.append(
+                                    "Error: Type of data. [{},{}]\n".format(
+                                        self.positions[self.current_token_index - 1]['row'],
+                                        self.positions[self.current_token_index - 1]['pos']))
+                                self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                                factor = False
+                    else:
+                        self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
+                        if not self.token_is(')'):
+                            factor = self.Function_Parameters(self.func_to_params[self.check_id_in_ids(identifier)])
+                            if not self.token_is(')'):
+                                factor = False
+                        elif self.func_to_params[self.check_id_in_ids(identifier)] != 0:
                             self.output.append(
-                                "Error: Type of data. [{},{}]\n".format(
+                                "Error: Wrong count of arguments. [{},{}]\n".format(
                                     self.positions[self.current_token_index - 1]['row'],
                                     self.positions[self.current_token_index - 1]['pos']))
                             self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
                             factor = False
-                    if not self.token_is('('):
-                        self.output.append("<Factor> -> <Identifier>\n")
-                    else:
-                        self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
-                        if not self.token_is(')'):
-                            self.Function_Parameters()
-                            if not self.token_is(')'):
-                                factor = False
                 else:
                     self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
