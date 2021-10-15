@@ -420,19 +420,20 @@ class SemanticAnalyser:
         function_parameters = True
         self.output.append("<Function-Parameters> -> <Expression> | <Function-Parameters> -> <Expression>, "
                            "<Function-Parameters>\n")
-        if self.Expression(argument=arguments[len(arguments) - count_params]):
-            count_params -= 1
-            if count_params == -1:
-                self.output.append(
-                    "Error: Wrong count of arguments. [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
-                function_parameters = False
-            if self.token_is(","):
-                function_parameters = self.Function_Parameters(count_params, arguments)
+        if count_params > 0:
+            if self.Expression(argument=arguments[len(arguments) - count_params]):
+                count_params -= 1
+                if self.token_is(","):
+                    function_parameters = self.Function_Parameters(count_params, arguments)
+            else:
+                self.output.append("<Function-Parameters> ->  epsilon\n")
         else:
-            self.output.append("<Function-Parameters> ->  epsilon\n")
+            self.output.append(
+                "Error: Wrong count of arguments. [{},{}]\n".format(
+                    self.positions[self.current_token_index - 1]['row'],
+                    self.positions[self.current_token_index - 1]['pos']))
+            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+            function_parameters = False
         return function_parameters
 
     def Factor(self, _id = None, argument = None):
