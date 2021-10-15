@@ -38,8 +38,8 @@ class Parser:
 
 def main():
     p = Parser()
-    p.parse('.\input.cpp', '.\output_lexer.txt',
-            '.\output_syntax.txt', '.\output_semantic.txt')
+    p.parse('./input.cpp', './output_lexer.txt',
+            './output_syntax.txt', './output_semantic.txt')
 
 
 if __name__ == "__main__":
