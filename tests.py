@@ -3,9 +3,9 @@ import sys
 from parser import Parser
 
 
-output_lexer = './tests/output_lexer.txt'
-output_syntax = './tests/output_syntax.txt'
-output_semantic = './tests/output_semantic.txt'
+output_lexer = './output_lexer.txt'
+output_syntax = './output_syntax.txt'
+output_semantic = './output_semantic.txt'
 
 
 # Проверка работоспособности комментариев
@@ -37,7 +37,7 @@ def test_semantic_func_2():
 def test_semantic_func_3():
     name = sys._getframe().f_code.co_name
     parse(name, output_lexer, output_syntax, output_semantic)
-    result = find_string_in_file('Error: Wrong count of arguments. [6,21]', output_semantic) # Мб тут другая строка
+    result = find_string_in_file('Error: Wrong count of arguments. [6,17]', output_semantic)
     print(name, result)
 
 
@@ -102,6 +102,22 @@ def test_semantic_visibility_2():
     name = sys._getframe().f_code.co_name
     parse(name, output_lexer, output_syntax, output_semantic)
     result = find_string_in_file('Error: Not initialized a variable.  [6,5]', output_semantic)
+    print(name, result)
+
+
+# Проверяем, что переменную, объявленную в цикле, не видно снаружи
+def test_semantic_visibility_3():
+    name = sys._getframe().f_code.co_name
+    parse(name, output_lexer, output_syntax, output_semantic)
+    result = find_string_in_file('Error: Not initialized a variable.  [6,5]', output_semantic)
+    print(name, result)
+
+
+# Проверяем, что переменная не объявлена
+def test_semantic_visibility_4():
+    name = sys._getframe().f_code.co_name
+    parse(name, output_lexer, output_syntax, output_semantic)
+    result = find_string_in_file('Error: Not initialized a variable.  [2,5]', output_semantic)
     print(name, result)
 
 
