@@ -35,11 +35,12 @@ class LexerState(Enum):
 
 
 class ErrorTypes(Enum):
-    NOT_VALID = 0,
-    INVALID = 1,
-    MISSING = 2,
-    NOT_INITIALIZE = 3,
-    WRONG_TYPE = 4
+    INVALID = 0,
+    MISSING = 1,
+    INITIALIZATION = 2,
+    WRONG_TYPE = 3,
+    MISSING_MAIN = 4,
+    EXPECTED = 5
 
 
 class Constants(object):

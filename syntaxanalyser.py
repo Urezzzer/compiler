@@ -80,7 +80,7 @@ class SyntaxAnalyserRDP:
                             self.output.append("Error: Expected Initialization variables. [{},{}]\n".format(
                                 self.positions[self.current_token_index]['row'],
                                 self.positions[self.current_token_index]['pos']))
-                            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                            self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
                         if not self.token_is('{'):
                             self.output.append("Error: Missing " + "{" + " in declaration of function. "
                                                                          "[{},{}]\n".format(
@@ -95,7 +95,7 @@ class SyntaxAnalyserRDP:
             self.output.append("Error: Expected a declaration of function. [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
                 self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+            self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
 
     def Statement(self):
         start = False
@@ -129,7 +129,7 @@ class SyntaxAnalyserRDP:
                 "Error: Expected a statement.  [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+            self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
 
 
         return start
@@ -144,7 +144,7 @@ class SyntaxAnalyserRDP:
             self.output.append("Error: Not a valid identifier.  [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
                 self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+            self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
 
         return declaration
 
@@ -157,7 +157,7 @@ class SyntaxAnalyserRDP:
                     self.output.append("Error: Expected Initialization variables. [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
                 if not self.token_in(Constants.VALID_EOL_SYMBOLS):
                     self.output.append("Error: Missing ';' at the end of the line.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
@@ -167,14 +167,14 @@ class SyntaxAnalyserRDP:
                 self.output.append("Error: Expected identifier.  [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
-                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
         elif self.Instruction():
             assignment = True
         else:
             self.output.append("Error: Expected initialization of function or variable.  [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
                 self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+            self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
 
         return assignment
 
@@ -214,7 +214,7 @@ class SyntaxAnalyserRDP:
             self.output.append("Error: Expected instruction.  [{},{}]\n".format(
                 self.positions[self.current_token_index]['row'],
                 self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+            self.errors.append(Error(ErrorTypes.EXPECTED, self.current_token_index))
 
         return instruction
 
@@ -268,7 +268,7 @@ class SyntaxAnalyserRDP:
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
             if self.token_is("!"):
                 if self.token_is("="):
                     if self.Expression():
@@ -277,7 +277,7 @@ class SyntaxAnalyserRDP:
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
             if self.token_is("<") or self.token_is(">"):
                 if self.token_is("="):
                     if self.Expression():
@@ -286,7 +286,7 @@ class SyntaxAnalyserRDP:
                     self.output.append("Error: Unrecognized conditional operator.  [{},{}]\n".format(
                         self.positions[self.current_token_index]['row'],
                         self.positions[self.current_token_index]['pos']))
-                    self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
                 else:
                     if self.Expression():
                         conditional = True
@@ -411,6 +411,7 @@ class SyntaxAnalyserRDP:
                 self.output.append("Error: Invalid term.  [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
+                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
             else:
                 if not self.Expression_Prime():
                     expression_prime = False

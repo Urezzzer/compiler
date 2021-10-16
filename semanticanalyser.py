@@ -60,7 +60,7 @@ class SemanticAnalyser:
             if ('main', 0) not in self.ids and len(self.errors) == 0:
                 self.output.clear()
                 self.output.append("Error: Expected main function.\n")
-                self.errors.append(Error(ErrorTypes.MISSING, self.current_token_index))
+                self.errors.append(Error(ErrorTypes.MISSING_MAIN, self.current_token_index))
         else:
             self.output.append("Empty file.\n")
 
@@ -138,7 +138,7 @@ class SemanticAnalyser:
                     self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
                         self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
 
     def Statement(self, _id = None):
         start = False
@@ -151,7 +151,7 @@ class SemanticAnalyser:
                 self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
                     self.positions[self.current_token_index - 1]['pos']))
-                self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
         elif self.token_in(Constants.VALID_DATA_TYPES):
             self.output.append("<Statement> -> <Declaration>\n")
             start = self.Declaration()
@@ -173,7 +173,7 @@ class SemanticAnalyser:
                 "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression. [{},{}]\n".format(
                     self.positions[self.current_token_index]['row'],
                     self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.NOT_VALID, self.current_token_index))
+            self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
 
         return start
 
@@ -191,7 +191,7 @@ class SemanticAnalyser:
                 self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                     self.positions[self.current_token_index - 1]['row'],
                     self.positions[self.current_token_index - 1]['pos']))
-                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
 
         return declaration
 
@@ -223,7 +223,7 @@ class SemanticAnalyser:
                     self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
                         self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
                 if self.token_is(','):
                     self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
                     self.Initialization()
@@ -342,12 +342,12 @@ class SemanticAnalyser:
                                         self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
                                             self.positions[self.current_token_index - 1]['row'],
                                             self.positions[self.current_token_index - 1]['pos']))
-                                        self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                                        self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
                     else:
                         self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
                             self.positions[self.current_token_index - 1]['row'],
                             self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                        self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
         return for_loop
 
     def While_Loop(self):
@@ -486,7 +486,7 @@ class SemanticAnalyser:
                     self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
                         self.positions[self.current_token_index - 1]['row'],
                         self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                    self.errors.append(Error(ErrorTypes.INITIALIZATION, self.current_token_index))
             elif self.is_current_token_an([LexerToken.INTEGER]):
                 self.output.append("<Factor> -> <Integer>\n")
                 if _id != None:
