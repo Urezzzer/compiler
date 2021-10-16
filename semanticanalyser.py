@@ -425,6 +425,13 @@ class SemanticAnalyser:
                 count_params -= 1
                 if self.token_is(","):
                     function_parameters = self.Function_Parameters(count_params, arguments)
+                elif count_params > 0:
+                    self.output.append(
+                        "Error: Wrong count of arguments. [{},{}]\n".format(
+                            self.positions[self.current_token_index - 1]['row'],
+                            self.positions[self.current_token_index - 1]['pos']))
+                    self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                    function_parameters = False
             else:
                 self.output.append("<Function-Parameters> ->  epsilon\n")
         else:
