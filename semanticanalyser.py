@@ -25,6 +25,18 @@ class SemanticAnalyser:
             'void': LexerToken.KEYWORD
         }
 
+        self.err_to_str = {
+            ErrorTypes.UNRECOGNIZED: "Error: Unrecognized value. Factor must be an integer, "
+                                     "float, string, identifier or expression. [{},{}]\n",
+            ErrorTypes.WRONG_TYPE: "Error: Wrong data type.  [{},{}]\n",
+            ErrorTypes.INVALID_EXP: "Error: Invalid expression.  [{},{}]\n",
+            ErrorTypes.INVALID_ID: "Error: string type does not support operators +, -, /, * . [{},{}]\n",
+            ErrorTypes.REINITIALIZE: "Error: Reinitializing a variable. [{},{}]\n",
+            ErrorTypes.NOT_INITIALIZE: "Error: Not initialized a variable.  [{},{}]\n",
+            ErrorTypes.MISSING_MAIN: "Error: Expected main function.\n",
+            ErrorTypes.WRONG_COUNT: "Error: Wrong count of arguments. [{},{}]\n"
+        }
+
 
     def backup(self, type):
         if self.current_token_index > 0:
@@ -59,8 +71,7 @@ class SemanticAnalyser:
                 self.Start()
             if ('main', 0) not in self.ids and len(self.errors) == 0:
                 self.output.clear()
-                self.output.append("Error: Expected main function.\n")
-                self.errors.append(Error(ErrorTypes.MISSING_MAIN, self.current_token_index))
+                self.errprint(ErrorTypes.MISSING_MAIN)
         else:
             self.output.append("Empty file.\n")
 
@@ -115,7 +126,10 @@ class SemanticAnalyser:
         return False
 
     def errprint(self, err_type):
-        ...
+        self.output.append(self.err_to_str[err_type].format(
+            self.positions[self.current_token_index]['row'],
+            self.positions[self.current_token_index]['pos']))
+        self.errors.append(Error(err_type, self.current_token_index))
 
     def Start(self):
         if self.token_in(Constants.VALID_DATA_TYPES):
@@ -138,10 +152,7 @@ class SemanticAnalyser:
                             self.del_ids(self.cur_depth)
                             self.cur_depth = self.cur_depth - 1
                 else:
-                    self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.REINITIALIZE, self.current_token_index))
+                    self.errprint(ErrorTypes.REINITIALIZE)
 
     def Statement(self, _id = None):
         start = False
@@ -151,10 +162,7 @@ class SemanticAnalyser:
             if self.check_id_in_ids(self.backup('lexeme')):
                 start = self.Assignment(self.check_id_in_ids(self.backup('lexeme')))
             else:
-                self.output.append("Error: Not initialized a variable.  [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
-                self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                self.errprint(ErrorTypes.NOT_INITIALIZE)
         elif self.token_in(Constants.VALID_DATA_TYPES):
             self.output.append("<Statement> -> <Declaration>\n")
             start = self.Declaration()
@@ -172,11 +180,7 @@ class SemanticAnalyser:
             start = self.Expression(self.cur_func)
             self.token_in(Constants.VALID_EOL_SYMBOLS)
         else:
-            self.output.append(
-                "Error: Unrecognized value. Factor must be an integer, float, string, identifier or expression. [{},{}]\n".format(
-                    self.positions[self.current_token_index]['row'],
-                    self.positions[self.current_token_index]['pos']))
-            self.errors.append(Error(ErrorTypes.UNRECOGNIZED, self.current_token_index))
+            self.errprint(ErrorTypes.UNRECOGNIZED)
 
         return start
 
@@ -191,10 +195,7 @@ class SemanticAnalyser:
                 if self.Instruction((self.backup('lexeme'), self.cur_depth)):
                     declaration = True
             else:
-                self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
-                self.errors.append(Error(ErrorTypes.REINITIALIZE, self.current_token_index))
+                self.errprint(ErrorTypes.REINITIALIZE)
 
         return declaration
 
@@ -223,10 +224,7 @@ class SemanticAnalyser:
                     self.ids.add((self.backup('lexeme'), self.cur_depth))
                     self.func_to_params[self.cur_func].append(data_type)
                 else:
-                    self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.REINITIALIZE, self.current_token_index))
+                    self.errprint(ErrorTypes.REINITIALIZE)
                 if self.token_is(','):
                     self.output.append("<Initialization> -> <Data-Type> <Identifier>, <Initialization>\n")
                     self.Initialization()
@@ -328,10 +326,7 @@ class SemanticAnalyser:
                                     if self.check_id_in_ids(self.backup('lexeme')):
                                         if self.token_is('='):
                                             if not self.Expression():
-                                                self.output.append("Error: Invalid expression.  [{},{}]\n".format(
-                                                    self.positions[self.current_token_index]['row'],
-                                                    self.positions[self.current_token_index]['pos']))
-                                                self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                                                self.errprint(ErrorTypes.INVALID_EXP)
                                         self.token_is(")")
                                         self.token_is("{")
                                         while not self.token_is("}"):
@@ -342,15 +337,9 @@ class SemanticAnalyser:
                                         self.cur_depth = self.cur_depth - 1
                                         for_loop = True
                                     else:
-                                        self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
-                                            self.positions[self.current_token_index - 1]['row'],
-                                            self.positions[self.current_token_index - 1]['pos']))
-                                        self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                                        self.errprint(ErrorTypes.NOT_INITIALIZE)
                     else:
-                        self.output.append("Error: Reinitializing a variable. [{},{}]\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.REINITIALIZE, self.current_token_index))
+                        self.errprint(ErrorTypes.REINITIALIZE)
         return for_loop
 
     def While_Loop(self):
@@ -429,20 +418,12 @@ class SemanticAnalyser:
                 if self.token_is(","):
                     function_parameters = self.Function_Parameters(count_params, arguments)
                 elif count_params > 0:
-                    self.output.append(
-                        "Error: Wrong count of arguments. [{},{}]\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                            self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.WRONG_COUNT, self.current_token_index))
+                    self.errprint(ErrorTypes.WRONG_COUNT)
                     function_parameters = False
             else:
                 self.output.append("<Function-Parameters> ->  epsilon\n")
         else:
-            self.output.append(
-                "Error: Wrong count of arguments. [{},{}]\n".format(
-                    self.positions[self.current_token_index - 1]['row'],
-                    self.positions[self.current_token_index - 1]['pos']))
-            self.errors.append(Error(ErrorTypes.WRONG_COUNT, self.current_token_index))
+            self.errprint(ErrorTypes.WRONG_COUNT)
             function_parameters = False
         return function_parameters
 
@@ -455,19 +436,11 @@ class SemanticAnalyser:
                     identifier = self.backup('lexeme')
                     if _id != None:
                         if self.ids_to_tokens[_id] != self.ids_to_tokens[self.check_id_in_ids(identifier)]:
-                            self.output.append(
-                                "Error: Type of data.  [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_TYPE)
                             factor = False
                     if argument != None:
                         if argument != self.ids_to_tokens[self.check_id_in_ids(identifier)]:
-                            self.output.append(
-                                "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_TYPE)
                             factor = False
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
@@ -479,52 +452,29 @@ class SemanticAnalyser:
                             if not self.token_is(')'):
                                 factor = False
                         elif len(self.func_to_params[self.check_id_in_ids(identifier)]) != 0:
-                            self.output.append(
-                                "Error: Wrong count of arguments. [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_COUNT, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_COUNT)
                             factor = False
                 else:
-                    self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                    self.errprint(ErrorTypes.NOT_INITIALIZE)
             elif self.is_current_token_an([LexerToken.INTEGER]):
                 self.output.append("<Factor> -> <Integer>\n")
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of data. [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
                 if argument != None:
                     if argument != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
             elif self.is_current_token_an([LexerToken.REAL]):
                 self.output.append("<Factor> -> <Float>\n")
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of data. [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
                 if argument != None:
                     if argument != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
             elif self.token_is("("):
                 self.output.append("<Factor> -> (<Expression>)\n")
@@ -543,19 +493,11 @@ class SemanticAnalyser:
                     identifier = self.backup('lexeme')
                     if _id != None:
                         if self.ids_to_tokens[_id] != self.ids_to_tokens[self.check_id_in_ids(identifier)]:
-                            self.output.append(
-                                "Error: Type of data. [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_TYPE)
                             factor = False
                     if argument != None:
                         if argument != self.ids_to_tokens[self.check_id_in_ids(identifier)]:
-                            self.output.append(
-                                "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_TYPE)
                             factor = False
                     if not self.token_is('('):
                         self.output.append("<Factor> -> <Identifier>\n")
@@ -567,95 +509,52 @@ class SemanticAnalyser:
                             if not self.token_is(')'):
                                 factor = False
                         elif len(self.func_to_params[self.check_id_in_ids(identifier)]) != 0:
-                            self.output.append(
-                                "Error: Wrong count of arguments. [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_COUNT, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_COUNT)
                             factor = False
                 else:
-                    self.output.append("Error: Not initialized a variable. [{},{}]\n".format(
-                        self.positions[self.current_token_index - 1]['row'],
-                        self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.NOT_INITIALIZE, self.current_token_index))
+                    self.errprint(ErrorTypes.NOT_INITIALIZE)
             elif self.is_current_token_an([LexerToken.INTEGER]):
                 self.output.append("<Factor> -> <Integer>\n")
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of data. [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
                 if argument != None:
                     if argument != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
             elif self.is_current_token_an([LexerToken.REAL]):
                 self.output.append("<Factor> -> <Float>\n")
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of data. [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
                 if argument != None:
                     if argument != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
             elif self.is_current_token_an([LexerToken.BOOLEAN]):
                 self.output.append("<Factor> -> <Boolean>\n")
                 if _id != None:
                     if self.ids_to_tokens[_id] != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of data. [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
                 if argument != None:
                     if argument != self.backup('token'):
-                        self.output.append(
-                            "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                self.positions[self.current_token_index - 1]['row'],
-                                self.positions[self.current_token_index - 1]['pos']))
-                        self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                        self.errprint(ErrorTypes.WRONG_TYPE)
                         factor = False
             elif self.token_is('"') or self.token_is("'"):
                 self.output.append("<Factor> -> <String>\n")
                 if operator not in ['=', 'return', '(', ',']:
-                    self.output.append(
-                        "Error: string type does not support operators +, -, /, * . [{},{}]\n".format(
-                            self.positions[self.current_token_index - 1]['row'],
-                         self.positions[self.current_token_index - 1]['pos']))
-                    self.errors.append(Error(ErrorTypes.INVALID, self.current_token_index))
+                    self.errprint(ErrorTypes.INVALID_ID)
                 elif self.is_current_token_an([LexerToken.STRING]):
                     if _id != None:
                         if self.ids_to_tokens[_id] != self.backup('token'):
-                            self.output.append(
-                                "Error: Type of data. [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_TYPE)
                             factor = False
                     if argument != None:
                         if argument != self.backup('token'):
-                            self.output.append(
-                                "Error: Type of parameter is not equal to type of argument.  [{},{}]\n".format(
-                                    self.positions[self.current_token_index - 1]['row'],
-                                    self.positions[self.current_token_index - 1]['pos']))
-                            self.errors.append(Error(ErrorTypes.WRONG_TYPE, self.current_token_index))
+                            self.errprint(ErrorTypes.WRONG_TYPE)
                             factor = False
                 if not (self.token_is('"') or self.token_is("'")):
                     factor = False
