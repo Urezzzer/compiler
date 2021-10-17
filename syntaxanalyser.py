@@ -21,7 +21,7 @@ class SyntaxAnalyserRDP:
             ErrorTypes.INVALID_EXP: "{}Error: Invalid expression.  [{},{}]\n"
         }
 
-    def parse(self, tokens, positions, errors):
+    def parse(self, tokens: list, positions: list, errors: list):
         self.tokens = tokens
         self.positions = positions
         self.errors = errors
@@ -33,12 +33,12 @@ class SyntaxAnalyserRDP:
         else:
             self.output.append("Empty file.\n")
 
-    def write_output_to_file(self, filename):
+    def write_output_to_file(self, filename: str):
         with open(filename, "w") as f:
             for line in self.output:
                 f.write(line)
 
-    def token_is(self, token_to_match):
+    def token_is(self, token_to_match: str) -> bool:
         if self.tokens[self.current_token_index].lexeme == token_to_match:
             self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
                             "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
@@ -47,7 +47,7 @@ class SyntaxAnalyserRDP:
         else:
             return False
 
-    def token_in(self, token_list):
+    def token_in(self, token_list: list) -> bool:
         if len(token_list) == 1:
             return self.token_is(token_list[0])
         else:
@@ -59,7 +59,7 @@ class SyntaxAnalyserRDP:
             else:
                 return False
 
-    def is_current_token_an(self, token_types):
+    def is_current_token_an(self, token_types: list) -> bool:
         if self.tokens[self.current_token_index].token in token_types:
             self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
                                "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
@@ -72,7 +72,7 @@ class SyntaxAnalyserRDP:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
-    def backup(self, flag):
+    def backup(self, flag: str):
         if self.current_token_index > 0:
             self.current_token_index -= 1
             if flag == 'lexeme':
@@ -105,7 +105,7 @@ class SyntaxAnalyserRDP:
         else:
             self.errprint(ErrorTypes.EXPECTED_DEC)
 
-    def Statement(self):
+    def Statement(self) -> bool:
         start = False
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
@@ -135,7 +135,7 @@ class SyntaxAnalyserRDP:
 
         return start
 
-    def Declaration(self):
+    def Declaration(self) -> bool:
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
@@ -145,7 +145,7 @@ class SyntaxAnalyserRDP:
             self.errprint(ErrorTypes.INVALID_ID)
         return declaration
 
-    def Assignment(self):
+    def Assignment(self) -> bool:
         assignment = False
         if self.token_is('('):
             self.output.append("<Assignment> -> <Identifier> (<Function-Parameters>);\n")
@@ -163,7 +163,7 @@ class SyntaxAnalyserRDP:
 
         return assignment
 
-    def Initialization(self):
+    def Initialization(self) -> bool:
         initial = True
         if self.token_in(Constants.VALID_DATA_TYPES):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
@@ -178,7 +178,7 @@ class SyntaxAnalyserRDP:
             self.output.append("<Initialization> -> epsilon\n")
         return initial
 
-    def Instruction(self):
+    def Instruction(self) -> bool:
         instruction = False
         if self.token_is('='):
             self.output.append("<Instruction> -> <Identifier> = <Expression>;\n")
@@ -194,7 +194,7 @@ class SyntaxAnalyserRDP:
 
         return instruction
 
-    def If_Statement(self):
+    def If_Statement(self) -> bool:
         ifstate = False
         self.output.append("<If-Statement> -> if (<Conditional>) {<Statement>} <Else>\n")
         if self.token_is("("):
@@ -217,7 +217,7 @@ class SyntaxAnalyserRDP:
 
         return ifstate
 
-    def Conditional(self):
+    def Conditional(self) -> bool:
         conditional = False
         self.output.append("<Conditional> -> <Expression> <Conditional-Operator> <Expression>\n")
         if self.Expression():
@@ -245,7 +245,7 @@ class SyntaxAnalyserRDP:
 
         return conditional
 
-    def Else(self):
+    def Else(self) -> bool:
         if self.token_is("else"):
             self.output.append("<Else> -> else {<Statement>}\n")
             if self.token_is("{"):
@@ -259,7 +259,7 @@ class SyntaxAnalyserRDP:
             self.output.append("<Else> -> epsilon\n")
         return True
 
-    def For_Loop(self):
+    def For_Loop(self) -> bool:
         for_loop = False
         self.output.append("<For-loop> -> for (<Declaration>; <Conditional>; <Identifier> = <Expression>) {<Statement>}\n")
         if self.token_is("("):
@@ -292,7 +292,7 @@ class SyntaxAnalyserRDP:
 
         return for_loop
 
-    def While_Loop(self):
+    def While_Loop(self) -> bool:
         while_loop = False
         self.output.append("<While-Loop> -> while (<conditional>) {<Statement>};\n ")
         if self.token_is("("):
@@ -312,7 +312,7 @@ class SyntaxAnalyserRDP:
 
         return while_loop
 
-    def Expression(self):
+    def Expression(self) -> bool:
         expression = False
         self.output.append("<Expression> -> <Term> <Expression-Prime>\n")
         if self.Term():
@@ -321,7 +321,7 @@ class SyntaxAnalyserRDP:
 
         return expression
 
-    def Expression_Prime(self):
+    def Expression_Prime(self) -> bool:
         expression_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("+") or self.token_is("-"):
@@ -338,7 +338,7 @@ class SyntaxAnalyserRDP:
 
         return expression_prime
 
-    def Term(self):
+    def Term(self) -> bool:
         term = False
 
         self.output.append("<Term> -> <Factor> <Term-Prime>\n")
@@ -348,7 +348,7 @@ class SyntaxAnalyserRDP:
 
         return term
 
-    def Term_Prime(self):
+    def Term_Prime(self) -> bool:
         term_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("*") or self.token_is("/"):
@@ -364,7 +364,7 @@ class SyntaxAnalyserRDP:
             self.output.append("<Term-Prime> -> epsilon\n")
         return term_prime
 
-    def Function_Parameters(self):
+    def Function_Parameters(self) -> bool:
         function_parameters = True
         self.output.append("<Function-Parameters> -> <Expression> | <Expression>, <Function-Parameters>\n")
         if self.Expression():
@@ -374,7 +374,7 @@ class SyntaxAnalyserRDP:
             self.output.append("<Function-Parameters> ->  epsilon\n")
         return function_parameters
 
-    def Factor(self):
+    def Factor(self) -> bool:
         factor = True
         if self.token_in(Constants.SIGNED_OPERATORS):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):

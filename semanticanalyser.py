@@ -2,6 +2,7 @@ from syntaxanalyser import SyntaxAnalyserRDP
 from lexer import Lexer
 from constants import *
 
+
 class SemanticAnalyser:
     def __init__(self):
         self.tokens = []
@@ -37,19 +38,19 @@ class SemanticAnalyser:
             ErrorTypes.WRONG_COUNT: "Error: Wrong count of arguments. [{},{}]\n"
         }
 
-
-    def backup(self, type):
+    def backup(self, type: str):
         if self.current_token_index > 0:
             self.current_token_index -= 1
             if type == 'lexeme':
                 value = self.tokens[self.current_token_index].lexeme
-            if type == 'token':
+            elif type == 'token':
                 value = self.tokens[self.current_token_index].token
+            else:
+                raise ValueError
             self.advance_token()
             return value
 
-
-    def write_output_to_file(self, filename):
+    def write_output_to_file(self, filename: str) -> None:
         with open(filename, "w") as f:
             for line in self.output:
                 f.write(line)
@@ -59,7 +60,7 @@ class SemanticAnalyser:
             for error in self.errors:
                 f.write("{:<24} {:<24}\n".format(error.type, error.index))
 
-    def parse(self, tokens, positions, errors):
+    def parse(self, tokens: list, positions: list, errors: list):
         self.tokens = tokens
         self.positions = positions
         self.errors = errors
@@ -75,8 +76,7 @@ class SemanticAnalyser:
         else:
             self.output.append("Empty file.\n")
 
-
-    def token_is(self, token_to_match):
+    def token_is(self, token_to_match: str) -> bool:
         if self.tokens[self.current_token_index].lexeme == token_to_match:
             self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
                                "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
@@ -85,7 +85,7 @@ class SemanticAnalyser:
         else:
             return False
 
-    def token_in(self, token_list):
+    def token_in(self, token_list: list) -> bool:
         if len(token_list) == 1:
             return self.token_is(token_list[0])
         else:
@@ -97,7 +97,7 @@ class SemanticAnalyser:
             else:
                 return False
 
-    def is_current_token_an(self, token_types):
+    def is_current_token_an(self, token_types: list) -> bool:
         if self.tokens[self.current_token_index].token in token_types:
             self.output.append("Lexeme: " + self.tokens[self.current_token_index].lexeme +
                                "  Token: " + self.tokens[self.current_token_index].token.name + "\n")
@@ -110,7 +110,7 @@ class SemanticAnalyser:
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
-    def del_ids(self, depth):
+    def del_ids(self, depth: int):
         to_delete = []
         for id_depth in self.ids:
             if id_depth[1] == depth:
@@ -119,13 +119,13 @@ class SemanticAnalyser:
             self.ids.remove(id_depth)
             self.ids_to_tokens.pop(id_depth)
 
-    def check_id_in_ids(self, id):
+    def check_id_in_ids(self, id: str):
         for depth in range(0, self.cur_depth + 1):
             if (id, depth) in self.ids:
                 return (id, depth)
         return False
 
-    def errprint(self, err_type):
+    def errprint(self, err_type: ErrorTypes):
         self.output.append(self.err_to_str[err_type].format(
             self.positions[self.current_token_index]['row'],
             self.positions[self.current_token_index]['pos']))
@@ -154,7 +154,7 @@ class SemanticAnalyser:
                 else:
                     self.errprint(ErrorTypes.REINITIALIZE)
 
-    def Statement(self, _id = None):
+    def Statement(self, _id=None) -> bool:
         start = False
 
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
@@ -184,7 +184,7 @@ class SemanticAnalyser:
 
         return start
 
-    def Declaration(self):
+    def Declaration(self) -> bool:
         declaration = False
         self.output.append("<Declaration> -> <Data-Type> <Assignment>\n")
         data_type = self.types_to_tokens[self.backup('lexeme')]
@@ -199,12 +199,13 @@ class SemanticAnalyser:
 
         return declaration
 
-    def Assignment(self, _id=None):
+    def Assignment(self, _id=None) -> bool:
         assignment = False
         identifier = self.backup('lexeme')
         if self.token_is('('):
             self.output.append("<Assignment> -> <Identifier> (<Function-Parameters>);\n")
-            if self.Function_Parameters(len(self.func_to_params[self.check_id_in_ids(identifier)]), self.func_to_params[self.check_id_in_ids(identifier)]):
+            if self.Function_Parameters(len(self.func_to_params[self.check_id_in_ids(identifier)]),
+                                        self.func_to_params[self.check_id_in_ids(identifier)]):
                 self.token_is(')')
                 self.token_in(Constants.VALID_EOL_SYMBOLS)
         elif self.Instruction(_id):
@@ -212,7 +213,7 @@ class SemanticAnalyser:
 
         return assignment
 
-    def Initialization(self):
+    def Initialization(self) -> bool:
         initial = True
         if self.cur_func not in self.func_to_params.keys():
             self.func_to_params[self.cur_func] = []
@@ -236,7 +237,7 @@ class SemanticAnalyser:
             self.output.append("<Initialization> -> epsilon\n")
         return initial
 
-    def Instruction(self, _id):
+    def Instruction(self, _id=None) -> bool:
         instruction = False
         if self.token_is('='):
             self.output.append("<Instruction> -> <Identifier> = <Expression>;\n")
@@ -246,7 +247,7 @@ class SemanticAnalyser:
 
         return instruction
 
-    def If_Statement(self):
+    def If_Statement(self) -> bool:
         ifstate = False
         self.output.append("<If-Statement> -> if (<Conditional>) {<Statement>} <Else>\n")
         if self.token_is("("):
@@ -264,7 +265,7 @@ class SemanticAnalyser:
 
         return ifstate
 
-    def Conditional(self, _id = None):
+    def Conditional(self, _id=None) -> bool:
         conditional = False
         self.output.append("<Conditional> -> <Expression> <Conditional-Operator> <Expression>\n")
 
@@ -288,7 +289,7 @@ class SemanticAnalyser:
 
         return conditional
 
-    def Else(self):
+    def Else(self) -> bool:
         if self.token_is("else"):
             self.output.append("<Else> -> else {<Statement>}\n")
             if self.token_is("{"):
@@ -305,7 +306,7 @@ class SemanticAnalyser:
 
         return True
 
-    def For_Loop(self):
+    def For_Loop(self) -> bool:
         for_loop = False
         self.output.append("<For-loop> -> for (<Declaration>; <Conditional>; "
                            "<Identifier> = <Expression>) {<Statement>}\n")
@@ -342,7 +343,7 @@ class SemanticAnalyser:
                         self.errprint(ErrorTypes.REINITIALIZE)
         return for_loop
 
-    def While_Loop(self):
+    def While_Loop(self) -> bool:
         while_loop = False
         self.output.append("<While-Loop> -> while (<conditional>) {<Statement>};\n ")
         if self.token_is("("):
@@ -360,7 +361,7 @@ class SemanticAnalyser:
 
         return while_loop
 
-    def Expression(self, _id = None, argument = None):
+    def Expression(self, _id=None, argument=None) -> bool:
         expression = False
         self.output.append("<Expression> -> <Term> <Expression-Prime>\n")
         if self.Term(_id, argument):
@@ -369,7 +370,7 @@ class SemanticAnalyser:
 
         return expression
 
-    def Expression_Prime(self, _id = None, argument = None):
+    def Expression_Prime(self, _id=None, argument=None) -> bool:
         expression_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("+") or self.token_is("-"):
@@ -384,7 +385,7 @@ class SemanticAnalyser:
 
         return expression_prime
 
-    def Term(self, _id = None, argument = None):
+    def Term(self, _id=None, argument=None) -> bool:
         term = False
 
         self.output.append("<Term> -> <Factor> <Term-Prime>\n")
@@ -394,7 +395,7 @@ class SemanticAnalyser:
 
         return term
 
-    def Term_Prime(self, _id = None, argument = None):
+    def Term_Prime(self, _id=None, argument=None) -> bool:
         term_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("*") or self.token_is("/"):
@@ -408,7 +409,7 @@ class SemanticAnalyser:
             self.output.append("<Term-Prime> -> epsilon\n")
         return term_prime
 
-    def Function_Parameters(self, count_params=0, arguments=[]):
+    def Function_Parameters(self, count_params=0, arguments=[]) -> bool:
         function_parameters = True
         self.output.append("<Function-Parameters> -> <Expression> | <Function-Parameters> -> <Expression>, "
                            "<Function-Parameters>\n")
@@ -427,7 +428,7 @@ class SemanticAnalyser:
             function_parameters = False
         return function_parameters
 
-    def Factor(self, _id = None, argument = None):
+    def Factor(self, _id=None, argument=None) -> bool:
         factor = True
         operator = self.backup('lexeme')
         if self.token_in(Constants.SIGNED_OPERATORS):
@@ -447,8 +448,9 @@ class SemanticAnalyser:
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
-                            factor = self.Function_Parameters(len(self.func_to_params[self.check_id_in_ids(identifier)]),
-                                                              self.func_to_params[self.check_id_in_ids(identifier)])
+                            factor = self.Function_Parameters(
+                                len(self.func_to_params[self.check_id_in_ids(identifier)]),
+                                self.func_to_params[self.check_id_in_ids(identifier)])
                             if not self.token_is(')'):
                                 factor = False
                         elif len(self.func_to_params[self.check_id_in_ids(identifier)]) != 0:
@@ -504,8 +506,9 @@ class SemanticAnalyser:
                     else:
                         self.output.append("<Factor> -> <Identifier>(<Function-Parameters>)\n")
                         if not self.token_is(')'):
-                            factor = self.Function_Parameters(len(self.func_to_params[self.check_id_in_ids(identifier)]),
-                                                              self.func_to_params[self.check_id_in_ids(identifier)])
+                            factor = self.Function_Parameters(
+                                len(self.func_to_params[self.check_id_in_ids(identifier)]),
+                                self.func_to_params[self.check_id_in_ids(identifier)])
                             if not self.token_is(')'):
                                 factor = False
                         elif len(self.func_to_params[self.check_id_in_ids(identifier)]) != 0:
