@@ -11,6 +11,7 @@ class CodeGenerator:
         self.errors = []
 
     def parse(self, tokens: list, errors: list):
+        """Запуск программы"""
         self.tokens = tokens
         self.errors = errors
         if len(tokens) > 1:
@@ -19,16 +20,18 @@ class CodeGenerator:
                 return
             while not self.is_current_token_an([LexerToken.END_OF_FILE]):
                 self.Start()
-            self.output.append("\n\nif __name__ == " + '"__main__":\n    main()\n')
+            self.output.append("\n\n\nif __name__ == " + '"__main__":\n    main()\n')
         else:
             self.output.append("Empty file.\n")
 
     def write_output_to_file(self, filename: str):
+        """Записывает output в текстовый файл"""
         with open(filename, "w") as f:
             for line in self.output:
                 f.write(line)
 
     def token_is(self, token_to_match: str) -> bool:
+        """Проверяет текущий токен на равенство с переданным"""
         if self.tokens[self.current_token_index].lexeme == token_to_match:
             self.advance_token()
             return True
@@ -36,6 +39,7 @@ class CodeGenerator:
             return False
 
     def token_in(self, token_list: list) -> bool:
+        """Проверяет текущий токен на вхождение в переданную группу"""
         if len(token_list) == 1:
             return self.token_is(token_list[0])
         else:
@@ -46,6 +50,7 @@ class CodeGenerator:
                 return False
 
     def is_current_token_an(self, token_types: list) -> bool:
+        """Проверяет текущий токен на вхождение в переданный тип токенов"""
         if self.tokens[self.current_token_index].token in token_types:
             self.advance_token()
             return True
@@ -53,16 +58,19 @@ class CodeGenerator:
             return False
 
     def advance_token(self):
+        """Метод для перехода к следующему токену"""
         if self.current_token_index < (len(self.tokens) - 1):
             self.current_token_index += 1
 
     def indentation(self):
+        """Метод для расставления отступов"""
         if not self.output[-1] == "):\n":
             self.output.append("\n")
         for i in range(self.count_of_t):
             self.output.append("\t")
 
     def Start(self):
+        """Старт"""
         if self.token_in(Constants.VALID_DATA_TYPES):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
                 if self.token_is('('):
@@ -77,6 +85,7 @@ class CodeGenerator:
                             self.Statement()
 
     def Statement(self) -> bool:
+        """Проверка текущего оператора и запуск соответствующего состояния"""
         start = False
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             self.indentation()
@@ -101,8 +110,9 @@ class CodeGenerator:
 
         return start
 
-    # done
+
     def Declaration(self) -> bool:
+        """Если текущий токен идентификатор, то запускается метод объявления переменной (запуск состояния объявления переменной.)"""
         declaration = False
         if self.is_current_token_an([LexerToken.IDENTIFIER]):
             if self.Instruction():
@@ -110,8 +120,8 @@ class CodeGenerator:
 
         return declaration
 
-    # done
     def Assignment(self) -> bool:
+        """Состояние вызова функции"""
         assignment = False
         if self.token_is('('):
             self.output.append(self.tokens[self.current_token_index-2].lexeme +
@@ -125,8 +135,8 @@ class CodeGenerator:
 
         return assignment
 
-    # done
     def Initialization(self) -> bool:
+        """Инициализация функций и её параметров"""
         initial = True
         if self.token_in(Constants.VALID_DATA_TYPES):
             if self.is_current_token_an([LexerToken.IDENTIFIER]):
@@ -143,8 +153,8 @@ class CodeGenerator:
 
         return initial
 
-    # done
     def Instruction(self) -> bool:
+        """Состояние объявления переменной"""
         instruction = False
         operator_token = self.tokens[self.current_token_index-1].lexeme
         if self.token_is('='):
@@ -157,8 +167,8 @@ class CodeGenerator:
 
         return instruction
 
-    # done
     def If_Statement(self) -> bool:
+        """Состояние If"""
         ifstate = False
         self.flag = True
         self.output.append("\n")
@@ -178,8 +188,8 @@ class CodeGenerator:
         self.flag = False
         return ifstate
 
-    # done
     def Conditional(self, flag: bool) -> bool:
+        """Состояние обработки условий"""
         conditional = False
         if flag:
             self.advance_token()
@@ -234,8 +244,8 @@ class CodeGenerator:
 
         return conditional
 
-    # done
     def Else(self) -> bool:
+        """Состояние обработки ветки else"""
         if self.token_is("else"):
             self.output.append("\n")
             self.count_of_t -= 1
@@ -248,8 +258,8 @@ class CodeGenerator:
                     self.Statement()
         return True
 
-    # done
     def For_Loop(self) -> bool:
+        """Состояние обработки цикла for"""
         for_loop = False
         self.flag = True
         self.output.append("\n")
@@ -272,29 +282,28 @@ class CodeGenerator:
         self.flag = False
         return for_loop
 
-    # done
     def While_Loop(self) -> bool:
+        """Состояние обработки цикла while"""
         while_loop = False
         self.flag = True
         self.output.append("\n")
         for i in range(self.count_of_t):
             self.output.append("\t")
-        self.output.append(self.tokens[self.current_token_index-1].lexeme)
+        self.output.append(self.tokens[self.current_token_index-1].lexeme + " ")
         self.count_of_t += 1
         if self.token_is("("):
-            self.output.append(self.tokens[self.current_token_index-1].lexeme)
             self.Conditional(False)
             if self.token_is(")"):
                 self.output[-1] = self.output[-1].strip()
-                self.output.append(self.tokens[self.current_token_index-1].lexeme + ":")
+                self.output.append(":")
                 if self.token_is("{"):
                     while not self.token_is("}"):
                         self.Statement()
         self.flag = False
         return while_loop
 
-    # done
     def Expression(self) -> bool:
+        """Состояние обработки выражений"""
         expression = False
         if self.Term():
             if self.Expression_Prime():
@@ -302,8 +311,8 @@ class CodeGenerator:
 
         return expression
 
-    # done
     def Expression_Prime(self) -> bool:
+        """Обработка сложения и вычитания"""
         expression_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("+") or self.token_is("-"):
@@ -316,8 +325,8 @@ class CodeGenerator:
 
         return expression_prime
 
-    # done
     def Term(self) -> bool:
+        """ """
         term = False
         if self.Factor():
             if self.Term_Prime():
@@ -325,8 +334,8 @@ class CodeGenerator:
 
         return term
 
-    # done
     def Term_Prime(self) -> bool:
+        """Обработка произведения и деления"""
         term_prime = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_is("*") or self.token_is("/"):
@@ -339,8 +348,8 @@ class CodeGenerator:
 
         return term_prime
 
-    # done
     def Function_Parameters(self) -> bool:
+        """Обработка аргументов функций"""
         function_parameters = True
         if self.Expression():
             if self.token_is(","):
@@ -349,8 +358,8 @@ class CodeGenerator:
 
         return function_parameters
 
-    # not done
     def Factor(self) -> bool:
+        """Обработка значений переменной"""
         factor = True
         operator_token = self.tokens[self.current_token_index].lexeme
         if self.token_in(Constants.SIGNED_OPERATORS):
