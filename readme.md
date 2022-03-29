@@ -1,4 +1,4 @@
-##Лабораторная 3. Часть 1. VPN
+## Лабораторная 3. Часть 1. VPN
 # Выполнили: Саранцев. А., Ерилов Ю., Лепёха А.
 
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/1.jpg)
