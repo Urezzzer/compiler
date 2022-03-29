@@ -15,6 +15,6 @@
 
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/o1.jpg)
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/o2.jpg)
-![1.jpg](https://github.com/Urezzzer/compiler/blob/master/03.jpg)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/o3.jpg)
 
 ## [Ссылка на файл перехваченного трафика](https://github.com/Urezzzer/compiler/blob/master/ipsec.pcapng)
