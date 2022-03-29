@@ -1,6 +1,7 @@
 ## Лабораторная 3. Часть 1. VPN
 # Выполнили: Саранцев. А., Ерилов Ю., Лепёха А.
 
+# WireGuard
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/1.jpg)
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/2.jpg)
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/2.5.jpg)
@@ -9,3 +10,14 @@
 ![1.jpg](https://github.com/Urezzzer/compiler/blob/master/5.jpg)
 
 ## [Ссылка на файл перехваченного трафика](https://github.com/Urezzzer/compiler/blob/master/wireguard.pcapng)
+
+# IPsec VPN
+
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/)
+
+## [Ссылка на файл перехваченного трафика]()
