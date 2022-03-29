@@ -1,1 +1,1 @@
-![1.jpg](https://github.com/Urezzzer/compiler/1.jpg)
+![1.jpg](https://github.com/Urezzzer/compiler/blob/master/1.jpg)
