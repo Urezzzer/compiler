@@ -1,13 +1,13 @@
-# Обязательно к прочтению
-* lexer.py - реализация лексического анализатора
-* syntaxanalyzer.py - реализация синтаксического анализатора
-* semanticanalyser.py - реализация семантического анализатора
+# Description
+* lexer.py - implementation of a lexical analyzer
+* syntaxanalyzer.py - implementation of a syntax analyzer
+* semanticanalyser.py - implementation of a semantic analyzer
 
-* constants.py - Файл, описывающий константы, состояния и виды токенов
-* grammar.py - грамматика
+* constants.py - constants, states and types of tokens
+* grammar.py - used grammar
 
-### parser.py - объединение 3 анализаторов - ЗАПУСКАТЬ ЭТОТ ФАЙЛ
+### parser.py - объединение 3 анализаторов - a parser that parses C++ code to Python code using abpve blocks
 
-* Вход: input.cpp - содержит код на языке с++
-* Выход: errors.txt - логи ошибок, output_lexer.txt - разбор лексического анализатора, output_semantic.txt - разбор семантического анализатора, output_syntax.txt - разбор синтаксического анализатора
-#### Пожалуйста, между операторами и переменными вводите пробелы, это позволяет парсеру определять позицию ошибки более точно
+* Input: input.cpp - C++ code
+* Output: errors.txt - error logs, output_lexer.txt - lexer traverse, output_semantic.txt - semantic traverse, output_syntax.txt - syntax traverse
+#### It has a problem of misdetermined position of error if code has no space symbols between operators. May be fixed :)
