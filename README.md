@@ -10,4 +10,4 @@
 
 * Input: input.cpp - C++ code
 * Output: errors.txt - error logs, output_lexer.txt - lexer traverse, output_semantic.txt - semantic traverse, output_syntax.txt - syntax traverse
-#### It has a problem of misdetermined position of error if code has no space symbols between operators. May be fixed :)
+#### It misdetermines position of error if code has no space symbols between operators. May be fixed :)
